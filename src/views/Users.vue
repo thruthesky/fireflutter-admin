@@ -3,8 +3,11 @@
     <h1>This is an Users page</h1>
 
     <div v-for="user in users" :key="user.uid" class="user-info">
-      UID: {{ user.uid }} <br />
-      Display Name: {{ user.displayName ?? "No Display Name" }} <br />
+      <img v-if="user.photoURL" :src="user.photoURL" :alt="user.photoURL" class="user-photo">
+      <div>        
+        UID: {{ user.uid }} <br />
+        Display Name: {{ user.displayName ?? "No Display Name" }} <br />
+      </div>
     </div>
 
     <p v-if="fetchingUsers">loading users ...</p>
@@ -71,6 +74,12 @@ export default class Users extends Vue {
 
 <style lang="scss" scoped>
 .user-info {
+  display: flex;
   margin-bottom: 1.5em;
+}
+
+.user-photo {
+  height: 50px;
+  width: 50px;
 }
 </style>

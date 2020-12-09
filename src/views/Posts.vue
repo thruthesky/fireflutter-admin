@@ -2,12 +2,19 @@
   <div class="about">
     <h1>This is an posts page</h1>
 
-    <div v-for="post in posts" :key="post.id" class="post-info">
+    <div v-for="post in posts" :key="post.id" class="post">
       Post ID: {{ post.id }} <br />
-      Title: {{ post.title }} <br />
-      Content: {{ post.content }} <br />
-      Owner UID: {{ post.uid }} <br />
-      Owner: {{ post.displayName ?? "No Display Name" }} <br />
+      <div class="meta">
+        <img v-if="post.photoURL" :src="post.photoURL" :alt="post.photoURL">
+        <div>
+          Title: {{ post.title }} <br />          
+          Owner: {{ post.displayName ?? "No Display Name" }} <br />
+        </div>
+      </div>
+      <div class="content">
+        Owner UID: {{ post.uid }} <br />
+      </div>
+      <hr>
     </div>
 
     <p v-if="fetchingPosts">loading posts ...</p>
@@ -69,7 +76,16 @@ export default class Posts extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.post-info {
+.post {
   margin-bottom: 1.5em;
+
+  .meta {
+    display: flex;
+
+    img {
+      width: 50px;
+      height: 50px;
+    }
+  }
 }
 </style>
