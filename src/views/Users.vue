@@ -7,7 +7,7 @@
       Display Name: {{ user.displayName ?? "No Display Name" }} <br />
     </div>
 
-    <p v-if="!fetchingUsers"> loading users ... </p>
+    <p v-if="!fetchingUsers">loading users ...</p>
   </div>
 </template>
 
@@ -20,33 +20,36 @@ export default class Users extends Vue {
   fetchingUsers = false;
   noMoreUsers = false;
 
+  col = firebase
+    .firestore()
+    .collection("meta")
+    .doc("user")
+    .collection("public");
+
   async fetchUsers() {
     if (this.fetchingUsers) return;
     if (this.noMoreUsers) return;
     this.fetchingUsers = true;
 
-    const col = firebase
-      .firestore()
-      .collection("meta")
-      .doc("user")
-      .collection("public");
-
-    let q = col.limit(30);
+    let q = this.col.orderBy("listOrder", "desc");
     if (this.users.length) {
-      q = q.startAfter([this.users[this.users.length - 1]]);
-      // q = col.orderBy('orderBy').startAfter([this.users[this.users.length - 1]]).limit(30);
-    } 
+      q = q.startAfter(this.users[this.users.length - 1]["listOrder"]);
+    }
+    q = q.limit(30);
+
     // else {
     //   q = col.limit(30);
     // }
-    
+
     const snapshot = await q.get();
-    console.log('Snapshot size:', snapshot.size);
+    console.log("Snapshot size:", snapshot.size);
     this.noMoreUsers = snapshot.size == 0;
 
     for (const docSnapshot of snapshot.docs) {
       const data = docSnapshot.data();
       data["uid"] = docSnapshot.id;
+      console.log("data.firstname", data["firstName"]);
+      console.log("data.listOrder", data["listOrder"]);
       this.users.push(data);
     }
     this.fetchingUsers = false;
@@ -54,13 +57,13 @@ export default class Users extends Vue {
 
   async created() {
     this.fetchUsers();
-		window.addEventListener("scroll", this.handleScroll);
+    window.addEventListener("scroll", this.handleScroll);
   }
-    
+
   handleScroll(e: any) {
-    const bottomOfWindow = 
-    document.documentElement.scrollTop + window.innerHeight >
-    document.documentElement.offsetHeight - 200;
+    const bottomOfWindow =
+      document.documentElement.scrollTop + window.innerHeight >
+      document.documentElement.offsetHeight - 200;
 
     if (bottomOfWindow) {
       this.fetchUsers();
