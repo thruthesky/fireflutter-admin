@@ -7,7 +7,8 @@
       Display Name: {{ user.displayName ?? "No Display Name" }} <br />
     </div>
 
-    <p v-if="!fetchingUsers">loading users ...</p>
+    <p v-if="fetchingUsers">loading users ...</p>
+    <p v-if="!fetchingUsers">No more users ...</p>
   </div>
 </template>
 
@@ -36,10 +37,6 @@ export default class Users extends Vue {
       q = q.startAfter(this.users[this.users.length - 1]["listOrder"]);
     }
     q = q.limit(30);
-
-    // else {
-    //   q = col.limit(30);
-    // }
 
     const snapshot = await q.get();
     console.log("Snapshot size:", snapshot.size);
