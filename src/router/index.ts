@@ -27,6 +27,31 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/Register.vue")
   },
   {
+    path: "/profile",
+    name: "Profile",
+    component: () => import("../views/Profile.vue")
+  },
+  {
+    path: "/categories",
+    name: "Categories",
+    component: () => import("../views/Categories.vue")
+  },
+  {
+    path: "/posts",
+    name: "Posts",
+    component: () => import("../views/Posts.vue")
+  },
+  {
+    path: "/photos",
+    name: "Photos",
+    component: () => import("../views/Photos.vue")
+  },
+  {
+    path: "/settings",
+    name: "Settings",
+    component: () => import("../views/Settings.vue")
+  },
+  {
     path: "/logout",
     name: "Logout",
     component: () => import("../views/Logout.vue")
