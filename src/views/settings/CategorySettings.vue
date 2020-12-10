@@ -33,7 +33,7 @@ import "firebase/firestore";
 
 export default class CategorySettings extends Vue {
   category: any = {
-    postPerFetch: 20
+    noOfPostPerFetch: 20
   };
   fetchingCategories = false;
 

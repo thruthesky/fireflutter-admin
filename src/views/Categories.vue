@@ -1,6 +1,6 @@
 <template>
   <div class="list">
-    <h1>This is an Categories page</h1>
+    <h2>Categories page</h2>
 
     <p>Forum categories:</p>
     <div v-for="category in categories" :key="category['id']" class="item">
