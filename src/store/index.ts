@@ -5,7 +5,8 @@ import "firebase/auth";
 
 export default createStore({
   state: {
-    user: {} as firebase.User
+    user: {} as firebase.User,
+    userData: {} as any
   },
   mutations: {},
   actions: {},

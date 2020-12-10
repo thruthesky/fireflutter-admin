@@ -6,12 +6,14 @@
     <router-link to="/posts">Posts</router-link> |
     <router-link to="/photos">Photos</router-link> |
     <router-link to="/settings">Settings</router-link> |
+    <router-link to="/translations">Translations</router-link> |
     <router-link to="/register">Register</router-link> |
     <router-link to="/profile">Profile</router-link> |
     <router-link to="/logout">Logout</router-link> |
     <router-link to="/about">About</router-link>
 
-    <span v-if="app.loggedIn">Uid: {{ $store.state.user.uid }}</span>
+    <span v-if="app.loggedIn">Email: {{ $store.state.user.email }}</span>
+    <span v-if="app.isAdmin">You are ADMIN!</span>
   </div>
   <router-view />
 </template>
@@ -21,6 +23,7 @@ import { AppService } from "@/services/app.service";
 import store from "@/store/index";
 import firebase from "firebase/app";
 import "firebase/auth";
+import "firebase/firestore";
 
 import { Vue } from "vue-class-component";
 
@@ -28,12 +31,22 @@ export default class RegisterForm extends Vue {
   app = new AppService();
 
   created() {
-    firebase.auth().onAuthStateChanged((user) => {
+    firebase.auth().onAuthStateChanged(async (user) => {
       if (user) {
         store.state.user = user;
         console.log("user logged in!");
+
+        const sanpshot = await firebase
+          .firestore()
+          .collection("users")
+          .doc(user.uid)
+          .get();
+        if (sanpshot.exists) {
+          store.state.userData = sanpshot.data();
+        }
       } else {
         store.state.user = {} as firebase.User;
+        store.state.userData = {};
         console.log("user Not logged in!");
       }
     });

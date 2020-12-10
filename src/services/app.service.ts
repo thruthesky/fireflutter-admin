@@ -7,4 +7,7 @@ export class AppService {
   get notLoggedIn(): boolean {
     return this.loggedIn;
   }
+  get isAdmin(): boolean {
+    return store.state.userData.isAdmin;
+  }
 }

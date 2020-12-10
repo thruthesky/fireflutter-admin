@@ -49,7 +49,12 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/settings",
     name: "Settings",
-    component: () => import("../views/Settings.vue")
+    component: () => import("../views/settings/Settings.vue")
+  },
+  {
+    path: "/settings/forum/:category",
+    name: "CategorySettings",
+    component: () => import("../views/settings/CategorySettings.vue")
   },
   {
     path: "/logout",
