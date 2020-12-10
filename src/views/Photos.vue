@@ -1,6 +1,6 @@
 <template>
 
-  {{ activePath }} <br />
+  <p>Active Path : {{ activePath }}</p>
 
   <button v-for="path in paths" :key="path" @click="onClickChangeFolder(path)">
     {{ path }}
@@ -93,8 +93,33 @@ export default class Posts extends Vue {
 
 <style lang="scss" scoped>
 .image-holder {
-  width: 30%;
+  box-sizing: border-box;
   padding: .25em;
+}
+
+
+@media screen and (min-width: 1200px) {
+   .image-holder {
+      width: 10%;
+   }
+}
+
+@media screen and (max-width: 1200px) {
+   .image-holder {
+      width: 25%;
+   }
+}
+
+@media screen and (max-width: 900px) {
+   .image-holder {
+      width: 33%;
+   }
+}
+
+@media screen and (max-width: 500px) {
+   .image-holder {
+      flex: 50%;
+   }
 }
 
 .image {
