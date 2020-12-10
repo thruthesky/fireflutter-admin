@@ -1,18 +1,18 @@
 <template>
-  <div class="about">
-    <h1>This is an Settings page</h1>
-    <div>
+  <div class="settings">
+    <h1>
       Forum Settings
+    </h1>
+
+    <router-link to="/settings/forum/forum">Edit Global Settings</router-link>
+    <br>
+    <br>
+    <div v-for="category of categories" :key="category.id" class="item">
+      ID: {{ category.id }} <br>
+      <router-link :to="'/settings/forum/' + category.id">Edit Settings</router-link>
     </div>
 
-    <div>
-      <router-link to="/settings/forum/forum">Global Settings</router-link>
-      <span v-for="category of categories" :key="category.id">
-        <router-link :to="'/settings/forum/' + category.id">{{
-          category.id
-        }}</router-link>
-      </span>
-    </div>
+    <p v-show="fetchingCategories"> Fetching other category settings ... </p>
   </div>
 </template>
 
@@ -29,26 +29,27 @@ export default class Categories extends Vue {
   fetchingCategories = false;
 
   async fetchCategories() {
+    this.fetchingCategories = true;
     const snapshot = await this.col.get();
     snapshot.docs.forEach((doc) => {
       this.categories.push(doc.data());
     });
+    this.fetchingCategories = false;
   }
 
   created() {
     this.fetchCategories();
   }
-  onSave() {
-    // firebase.firestore().collection('settings').doc('category.id').set({...}, {merge: true});
-    // console.log(proxy(this.categories));
-    // this.categories.map((category) => {
-    //   this.col
-    //     .doc(category["id"])
-    //     .update({
-    //       title: category.title ?? "",
-    //       description: category.description ?? ""
-    //     });
-    // });
-  }
 }
 </script>
+
+<style lang="scss" scoped>
+.settings {
+  text-align: left;
+  padding: .5em;
+}
+
+.item {
+  margin-bottom: 1em;
+}
+</style>

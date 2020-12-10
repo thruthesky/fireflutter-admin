@@ -3,11 +3,11 @@
     <h1>This is an Categories page</h1>
 
     <p>Forum categories:</p>
-    <p v-for="category in categories" :key="category['id']">
-      {{ category["id"] }}
-      <input type="text" v-model="category['title']" />
-      <input type="text" v-model="category['description']" />
-    </p>
+    <div v-for="category in categories" :key="category['id']" class="item">
+      ID: {{ category["id"] }} <br>
+      Title: <input type="text" v-model="category['title']" /> <br>
+      Description: <input type="text" v-model="category['description']" /> <br>
+    </div>
 
     <button type="button" @click="onSave()">Save</button>
 
@@ -43,7 +43,7 @@ export default class Categories extends Vue {
     this.fetchCategories();
   }
   onSave() {
-    console.log(proxy(this.categories));
+    // console.log(proxy(this.categories));
     this.categories.map((category) => {
       this.col
         .doc(category["id"])
@@ -59,5 +59,9 @@ export default class Categories extends Vue {
 <style lang="scss" scoped>
 .list {
   text-align: left;
+}
+
+.item {
+  margin-bottom: 1em;
 }
 </style>

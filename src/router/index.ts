@@ -57,6 +57,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/settings/CategorySettings.vue")
   },
   {
+    path: "/translations",
+    name: "Translations",
+    component: () => import("../views/Translations.vue")
+  },
+  {
     path: "/logout",
     name: "Logout",
     component: () => import("../views/Logout.vue")

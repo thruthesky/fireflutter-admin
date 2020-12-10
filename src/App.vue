@@ -12,8 +12,9 @@
     <router-link to="/logout">Logout</router-link> |
     <router-link to="/about">About</router-link>
 
-    <span v-if="app.loggedIn">Email: {{ $store.state.user.email }}</span>
-    <span v-if="app.isAdmin">You are ADMIN!</span>
+    <p v-if="app.loggedIn">Current user Email: {{ $store.state.user.email }}</p> 
+    <span v-if="app.isAdmin">You are an ADMIN!</span>
+
   </div>
   <router-view />
 </template>
@@ -34,7 +35,7 @@ export default class RegisterForm extends Vue {
     firebase.auth().onAuthStateChanged(async (user) => {
       if (user) {
         store.state.user = user;
-        console.log("user logged in!");
+        // console.log("user logged in!");
 
         const sanpshot = await firebase
           .firestore()
@@ -47,7 +48,7 @@ export default class RegisterForm extends Vue {
       } else {
         store.state.user = {} as firebase.User;
         store.state.userData = {};
-        console.log("user Not logged in!");
+        // console.log("user Not logged in!");
       }
     });
   }
