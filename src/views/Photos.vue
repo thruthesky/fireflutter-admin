@@ -10,7 +10,6 @@
 
   <div class="grid">
     <div v-for="url of urls[activePath]" :key="url" class="image-holder">
-      <!-- {{ url }} -->
       <img :src="url" :alt="url" class="image">
     </div>
   </div>
