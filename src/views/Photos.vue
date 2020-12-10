@@ -1,17 +1,18 @@
 <template>
-  <div>
-    <h1>This is an Photos page</h1>
-  </div>
 
-  <h3>Image count: {{ imageCount }}</h3>
-  <div v-for="url in urls" :key="url" class="image-holder">
+  {{ activePath }} <br />
+
+  <button v-for="path in paths" :key="path" @click="onClickChangeFolder(path)">
+    {{ path }}
+  </button>
+
+  <p>Image Count {{ imageCounts[activePath] }} </p>
+
+  <div v-for="url of urls[activePath]" :key="url" class="image-holder">
     {{ url }}
-    <img :src="url" alt="url" class="image">
-    <hr>
+    <img :src="url" :alt="url" class="image">
   </div>
 
-  <p v-if="loadingPhotos"> Loading photos ... </p>
-  <p v-if="nextPageToken == null"> No more photos ... </p>
 </template>
 
 <script lang="ts">
@@ -22,42 +23,58 @@ import 'firebase/storage'
 
 export default class Posts extends Vue {
   storageRef = firebase.storage().ref();
-  forumPhotos = this.storageRef.child('forum-photos');
+  paths = ['forum-photos', 'user-profile-photos'];
+  activePath = '';
 
-  /// if `null`, means the server returned all possible images.
-  /// can also be used to check if no more photos.
-  nextPageToken: any = '';
-  urls: string[] = [];
-  imageCount = 0;
+  nextPageTokens: any = {
+    'forum-photos': '',
+    'user-profile-photos': '',
+  }
+  imageCounts: any = {
+    'forum-photos': 0,
+    'user-profile-photos': 0,
+  }
+  urls: any = {
+    'forum-photos': [],
+    'user-profile-photos': [],
+  }
 
   loadingPhotos = false;
 
-  async fetchImages() {
-    if (this.loadingPhotos) return;
+  onClickChangeFolder(path: string) {
+    this.activePath = path;
+    if (!this.urls[path].length) {
+      this.fetchImages(path);
+    }
+  }
 
-    /// next page token is an empty string by default.
-    /// once we fetch more images and the result length is less than the maxResults
-    /// result.nextPageToken will contain a null value.
-    if (this.nextPageToken == null) return;
+  async fetchImages(path: string) {
+    this.activePath = path;
+    console.log('path', path);
+
+    if (this.loadingPhotos) return;
+    if (this.nextPageTokens[path] == null) return;
+
     this.loadingPhotos = true;
 
-    const res = await this.forumPhotos.list({ maxResults: 20, pageToken: this.nextPageToken});
+    const listRef = this.storageRef.child(path);
+    const res = await listRef.list({ maxResults: 20, pageToken: this.nextPageTokens[path] });
 
-    this.nextPageToken = res.nextPageToken;
-    console.log("next page token :", this.nextPageToken);
+    this.nextPageTokens[path] = res.nextPageToken;
+    console.log("next page token :", this.nextPageTokens[path]);
 
-    this.imageCount += res.items.length;
-    console.log("image count: ", this.imageCount);
+    this.imageCounts[path] += res.items.length;
+    console.log("image count: ", this.imageCounts[path]);
 
     res.items.forEach(async item => {
         const downloadURL = await item.getDownloadURL();
-        this.urls.push(downloadURL);
+        this.urls[path].push(downloadURL);
     })
     this.loadingPhotos = false;
   }
 
   created() {
-    this.fetchImages();
+    this.fetchImages(this.paths[0]);
     window.addEventListener("scroll", this.handleScroll);
   }
   
@@ -67,7 +84,7 @@ export default class Posts extends Vue {
       document.documentElement.offsetHeight - 200;
 
     if (bottomOfWindow) {
-      this.fetchImages();
+      this.fetchImages(this.activePath);
     }
   }
 }
