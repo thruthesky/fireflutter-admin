@@ -8,11 +8,12 @@
 
   <p>Image Count {{ imageCounts[activePath] }} </p>
 
-  <div v-for="url of urls[activePath]" :key="url" class="image-holder">
-    {{ url }}
-    <img :src="url" :alt="url" class="image">
+  <div class="grid">
+    <div v-for="url of urls[activePath]" :key="url" class="image-holder">
+      <!-- {{ url }} -->
+      <img :src="url" :alt="url" class="image">
+    </div>
   </div>
-
 </template>
 
 <script lang="ts">
@@ -92,10 +93,17 @@ export default class Posts extends Vue {
 
 <style lang="scss" scoped>
 .image-holder {
-  margin-bottom: 1em;
+  width: 30%;
+  padding: .25em;
 }
 
 .image {
   width: 100%;
+}
+
+.grid {
+   display: flex;
+   flex-wrap: wrap;
+   padding: 0 4px;
 }
 </style>
