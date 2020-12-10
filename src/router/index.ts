@@ -59,7 +59,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/translations",
     name: "Translations",
-    component: () => import("../views/Translations.vue")
+    component: () => import("../views/translations/Translations.vue")
   },
   {
     path: "/logout",

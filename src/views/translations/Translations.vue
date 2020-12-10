@@ -1,24 +1,14 @@
 <template>
   <div class="page">
     <h1>Translations Page</h1>
-
-    {{ translations }}
-
-    <br>
-    <br>
     <div class="input-group">
         <label for="newLanguange">New languange (code): </label>
-        <input type="text" name="newLanguange" id="newLanguange" v-model="newLanguangeCode">
+        <input type="text" name="newLanguange" v-model="newLanguangeCode">
         <button @click="addNewDocument">Add Language Code</button>
     </div>
 
-    <div v-for="(value, name) of translations" :key="name" class="item">
-         <hr>
-         Language Code [ {{ name }} ] : <br><br>
-        
-         <div v-for="(key, value) in value" :key="key">
-            {{ key }} : {{ value }}
-         </div>
+    <div v-for="(value, name) in translations" :key="name">
+      <translation-form :translations="value" :language-code="name" />
     </div>
 
     <p v-show="fetchingTranslations">Loading translation list ..</p>
@@ -26,11 +16,15 @@
 </template>
 
 <script lang="ts">
-import { Vue } from "vue-class-component";
-import { proxy } from "../services/functions";
+import { Vue, Options } from "vue-class-component";
+import TranslationForm from "./TranslationForm.vue";
+import { proxy } from "../../services/functions";
 import firebase from "firebase/app";
 import "firebase/firestore";
 
+@Options({
+  components: { TranslationForm }
+})
 export default class Categories extends Vue {
   col = firebase.firestore().collection("translations");
   fetchingTranslations = false;
@@ -41,7 +35,7 @@ export default class Categories extends Vue {
   async fetchTranslations() {
     this.fetchingTranslations = true;
     const res = await this.col.get();
-    res.docs.forEach((doc) => {
+    res.docs.forEach(doc => {
         this.translations[doc.id] = doc.data();
     });
     this.fetchingTranslations = false;
