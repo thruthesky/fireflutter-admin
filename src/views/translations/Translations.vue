@@ -11,6 +11,7 @@
       <translation-form :translations="value" :language-code="name" />
     </div>
 
+    <p v-show="translations.length < 1">No translations yet</p>
     <p v-show="fetchingTranslations">Loading translation list ..</p>
   </div>
 </template>
