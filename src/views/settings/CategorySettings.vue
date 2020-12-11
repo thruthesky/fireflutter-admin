@@ -18,7 +18,7 @@
     <br>
     <div>
       No of posts per each fetch: <br>
-      <input type="number" id="postPerFetch" v-model="category.postPerFetch" />
+      <input type="number" id="postPerFetch" v-model="category['no-of-posts-per-fetch']" />
     </div>
     <br>
     <button type="button" @click="onSave">Submit</button>
@@ -33,7 +33,7 @@ import "firebase/firestore";
 
 export default class CategorySettings extends Vue {
   category: any = {
-    noOfPostPerFetch: 20
+    "no-of-posts-per-fetch": 20
   };
   fetchingCategories = false;
 
