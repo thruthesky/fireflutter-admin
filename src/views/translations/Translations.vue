@@ -2,13 +2,30 @@
   <div class="page">
     <h1>Translations Page</h1>
     <div class="input-group">
-        <label for="newLanguange">New languange (code): </label>
-        <input type="text" name="newLanguange" v-model="newLanguangeCode">
-        <button @click="addNewDocument">Add Language Code</button>
+      <label for="newLanguange">New languange (code): </label>
+      <input type="text" name="newLanguange" v-model="newLanguangeCode" />
+      <button @click="addNewLanguageCode">Add Language Code</button>
     </div>
+    <br />
+    <br />
+    <div class="input-group">
+      <label for="newTranslationCode">New Translation (code): </label>
+      <input
+        type="text"
+        name="newTranslationCode"
+        v-model="newTranslationCode"
+      />
+      <button @click="onSave(newTranslationCode)">Add Translation Code</button>
+    </div>
+    <br /><br />
 
     <div v-for="(value, name) in translations" :key="name">
-      <translation-form :translations="value" :language-code="name" />
+      <b>{{ name }}</b>
+      <div v-for="lc in languageCodes" :key="lc">
+        {{ lc }} : <input type="text" v-model="value[lc]" />
+      </div>
+      <button type="button" @click="onSave(name)">Save</button>
+      <br /><br />
     </div>
 
     <p v-show="translations.length < 1">No translations yet</p>
@@ -17,48 +34,89 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options } from "vue-class-component";
-import TranslationForm from "./TranslationForm.vue";
+import { Vue } from "vue-class-component";
 import { proxy } from "../../services/functions";
 import firebase from "firebase/app";
 import "firebase/firestore";
 
-@Options({
-  components: { TranslationForm }
-})
 export default class Categories extends Vue {
   col = firebase.firestore().collection("translations");
   fetchingTranslations = false;
 
-  newLanguangeCode = '';
-  translations: any = {};
+  newLanguangeCode = "";
+  newTranslationCode = "";
 
-  async fetchTranslations() {
-    this.fetchingTranslations = true;
-    const res = await this.col.get();
-    res.docs.forEach(doc => {
-        this.translations[doc.id] = doc.data();
-    });
-    this.fetchingTranslations = false;
-  }
-
-  async addNewDocument() {
-    if (!this.newLanguangeCode) return;
-    try {
-        await this.col.doc(this.newLanguangeCode).set({});
-        this.translations[this.newLanguangeCode] = {};
-        this.newLanguangeCode = '';
-        alert("New language code added!");
-    } catch(e) {
-        alert(e);
-    }
-  }
+  languageCodes: string[] = [];
+  translations: {
+    [key: string]: {
+      [key: string]: {};
+    };
+  } = {};
 
   created() {
     this.fetchTranslations();
   }
-  onSave() {
-    // console.log(proxy(this.categories));
+
+  async fetchTranslations() {
+    this.fetchingTranslations = true;
+    const res = await this.col.get();
+    res.docs.forEach((doc) => {
+      const lc = doc.id;
+      this.languageCodes.push(lc);
+      const data = doc.data();
+      const keys = Object.keys(data);
+
+      keys.forEach((key) => {
+        if (!this.translations[key]) this.translations[key] = {};
+        this.translations[key][lc] = data[key];
+      });
+    });
+    this.fetchingTranslations = false;
+  }
+
+  async addNewLanguageCode() {
+    if (!this.newLanguangeCode) return;
+
+    const keys = Object.keys(this.translations);
+    const data: any = {};
+    keys.forEach((key) => {
+      data[key] = "";
+    });
+
+    try {
+      await this.col.doc(this.newLanguangeCode).set(data);
+      this.languageCodes.push(this.newLanguangeCode);
+      this.newLanguangeCode = "";
+      alert("New language code added!");
+    } catch (e) {
+      alert(e);
+    }
+  }
+
+  onSave(translationCode: string) {
+    // console.log("translationCode", translationCode);
+
+    this.languageCodes.forEach(async (lc) => {
+      const data: any = {};
+      if (!this.translations[translationCode]) {
+        data[translationCode] = "";
+      } else {
+        data[translationCode] = this.translations[translationCode][lc];
+      }
+      // console.log(data);
+
+      try {
+        await this.col.doc(lc).set(data, { merge: true });
+        console.log('this.translations[translationCode]', !this.translations[translationCode], translationCode);
+        if (!this.translations[translationCode]) {
+          this.translations[translationCode] = {};
+        }
+        this.translations[translationCode][lc] = data[translationCode];
+      } catch (e) {
+        alert(e);
+      }
+    });
+    alert("translations updated!");
   }
 }
 </script>
@@ -66,15 +124,15 @@ export default class Categories extends Vue {
 
 <style lang="scss" scoped>
 .page {
-    text-align: left;
+  text-align: left;
 }
 
 .input-group {
-    display: inline;
+  display: inline;
 }
 
 .item {
-    padding: .5em;
-    margin: .5em;
+  padding: 0.5em;
+  margin: 0.5em;
 }
 </style>
