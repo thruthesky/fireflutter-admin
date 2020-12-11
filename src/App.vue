@@ -5,6 +5,7 @@
     <router-link to="/categories">Categories</router-link> |
     <router-link to="/posts">Posts</router-link> |
     <router-link to="/photos">Photos</router-link> |
+    <router-link to="/purchases">Purchases</router-link> |
     <router-link to="/settings">Settings</router-link> |
     <router-link to="/translations">Translations</router-link> |
     <router-link to="/register">Register</router-link> |
@@ -12,9 +13,8 @@
     <router-link to="/logout">Logout</router-link> |
     <router-link to="/about">About</router-link>
 
-    <p v-if="app.loggedIn">Current user Email: {{ $store.state.user.email }}</p> 
+    <p v-if="app.loggedIn">Current user Email: {{ $store.state.user.email }}</p>
     <span v-if="app.isAdmin">You are an ADMIN!</span>
-
   </div>
   <router-view />
 </template>
