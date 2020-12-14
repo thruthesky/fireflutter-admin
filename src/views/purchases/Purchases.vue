@@ -207,17 +207,48 @@ export default class Purchases extends Vue {
     purchaseID: false,
     purchasehashCode: false,
     purchaseStatus: false,
-    beginAt: false,
+    beginAt: true,
     endAt: false
   };
 
   async created() {
     console.log("getting purchases");
-    const got = await this.col.get();
+    // const got = await this.col.get();
 
-    // const cr = this.col.where("startAt", ">", this.startDate );
-    // cr.where("startAt", "<", this.endDate );
-    // const got = await cr.get();
+    const dAt = new Date(this.startDate);
+    console.log(dAt.getFullYear(), dAt.getMonth(), dAt.getDate());
+    const beginAt = new Date(
+      dAt.getFullYear(),
+      dAt.getMonth(),
+      dAt.getDate(),
+      23,
+      59,
+      59
+    );
+    const _beginAt = new firebase.firestore.Timestamp(
+      Math.round(beginAt.getTime() / 1000),
+      0
+    );
+    const eAt = new Date(this.endDate);
+    console.log(eAt.getFullYear(), eAt.getMonth(), eAt.getDate());
+    const endAt = new Date(
+      eAt.getFullYear(),
+      eAt.getMonth(),
+      eAt.getDate(),
+      23,
+      59,
+      59
+    );
+    const _endAt = new firebase.firestore.Timestamp(
+      Math.round(endAt.getTime() / 1000),
+      0
+    );
+    const cr = this.col
+      .where("uid", "==", "aUUm0vjfU6PZqPTbhyvmFiWMyxS2")
+      .where("status", "==", "failure")
+      .where("beginAt", ">=", _beginAt)
+      .where("beginAt", "<=", _endAt);
+    const got = await cr.get();
     this.prepData(got);
   }
 
@@ -227,8 +258,7 @@ export default class Purchases extends Vue {
     // const got = await this.col.where("uid", "==", data.uid).get();
 
     const startAt = new Date(this.startDate).getTime();
-    const startAt = new Date(this.startDate).getTime();
-    const endAt = new Date(this.endDate).getTime();
+    const endAt = new Date(this.endDate);
 
     console.log("Date Range\n", startAt, endAt);
 
@@ -236,12 +266,23 @@ export default class Purchases extends Vue {
 
     // const cr = this.col;
 
-    if (data.uid) {
-      console.log("data.uid\n", data.uid);
-      cr.where("uid", "==", data.uid);
-    }
-    cr.where("beginAt", ">", startAt);
-    cr.where("beginAt", "<", endAt);
+    // console.log(endAt.toLocaleString());
+
+    const _endAt = new firebase.firestore.Timestamp(
+      Math.round(endAt.getTime() / 1000),
+      0
+    );
+
+    // console.log(_endAt);
+
+    // console.log(new Date(_endAt.seconds * 1000).toLocaleString());
+
+    // if (data.uid) {
+    //   console.log("data.uid\n", data.uid);
+    //   cr.where("uid", "==", data.uid);
+    // }
+    // cr.where("beginAt", ">", startAt);
+    cr.where("beginAt", "<", _endAt);
 
     const got = await cr.get();
     console.log("got", got);
