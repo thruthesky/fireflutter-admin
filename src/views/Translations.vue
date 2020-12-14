@@ -38,7 +38,7 @@
 
 <script lang="ts">
 import { Vue } from "vue-class-component";
-import { proxy } from "../../services/functions";
+import { proxy } from "../services/functions";
 import firebase from "firebase/app";
 import "firebase/firestore";
 

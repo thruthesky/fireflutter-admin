@@ -7,6 +7,7 @@
       <div>        
         UID: {{ user.uid }} <br />
         Display Name: {{ user.displayName ?? "No Display Name" }} <br />
+        Greeting: {{ user.greeting ?? 'None' }}
       </div>
     </div>
 
@@ -48,8 +49,8 @@ export default class Users extends Vue {
     for (const docSnapshot of snapshot.docs) {
       const data = docSnapshot.data();
       data["uid"] = docSnapshot.id;
-      console.log("data.firstname", data["firstName"]);
-      console.log("data.listOrder", data["listOrder"]);
+      // console.log("data.firstname", data["firstName"]);
+      // console.log("data.listOrder", data["listOrder"]);
       this.users.push(data);
     }
     this.fetchingUsers = false;
@@ -75,6 +76,7 @@ export default class Users extends Vue {
 <style lang="scss" scoped>
 .user-info {
   display: flex;
+  text-align: left;
   margin-bottom: 1.5em;
 }
 
