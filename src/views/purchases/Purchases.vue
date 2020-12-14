@@ -3,10 +3,13 @@
     <h1>Purchases</h1>
     <form @submit.prevent="onSubmit">
       <div class="queryOptions">
-        <span>uid<input type="text" v-model="form.uid" placeholder="uid"/></span>
+        <span
+          >uid<input type="text" v-model="form.uid" placeholder="uid"
+        /></span>
         <span>
           Status
           <select name="status" id="status" v-model="form.status">
+            <option value="">Select Status</option>
             <option value="success">Success</option>
             <option value="pending">Pending</option>
             <option value="failure">Failure</option>
@@ -200,8 +203,8 @@ export default class Purchases extends Vue {
   transactions: any[] = [];
 
   form = {
-    status: "success",
-    productID: "lucky_box"
+    status: "",
+    productID: ""
   };
 
   d = new Date();
@@ -286,23 +289,31 @@ export default class Purchases extends Vue {
       0
     );
 
-    let cr;
-    if (data.uid) {
-      cr = this.col
-        .where("uid", "==", data.uid)
-        .where("productDetails.id", "==", data.productID)
-        .where("status", "==", data.status)
-        .where("beginAt", ">=", _beginAt)
-        .where("beginAt", "<=", _endAt);
-    } else {
-      cr = this.col
-        .where("productDetails.id", "==", data.productID)
-        .where("status", "==", data.status)
-        .where("beginAt", ">=", _beginAt)
-        .where("beginAt", "<=", _endAt);
+    let q = this.col
+      .where("beginAt", ">=", _beginAt)
+      .where("beginAt", "<=", _endAt);
+
+    if (data.status) {
+      q = q.where("status", "==", data.status);
     }
 
-    const got = await cr.get();
+    // let cr;
+    // if (data.uid) {
+    //   cr = this.col
+    //     .where("uid", "==", data.uid)
+    //     .where("productDetails.id", "==", data.productID)
+    //     .where("status", "==", data.status)
+    //     .where("beginAt", ">=", _beginAt)
+    //     .where("beginAt", "<=", _endAt);
+    // } else {
+    //   cr = this.col
+    //     .where("productDetails.id", "==", data.productID)
+    //     .where("status", "==", data.status)
+    //     .where("beginAt", ">=", _beginAt)
+    //     .where("beginAt", "<=", _endAt);
+    // }
+
+    const got = await q.get();
     this.prepData(got);
   }
 
