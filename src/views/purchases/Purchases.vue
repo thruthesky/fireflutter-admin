@@ -227,6 +227,7 @@ export default class Purchases extends Vue {
     // const got = await this.col.where("uid", "==", data.uid).get();
 
     const startAt = new Date(this.startDate).getTime();
+    const startAt = new Date(this.startDate).getTime();
     const endAt = new Date(this.endDate).getTime();
 
     console.log("Date Range\n", startAt, endAt);
