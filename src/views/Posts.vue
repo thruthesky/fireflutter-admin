@@ -3,12 +3,14 @@
     <h1>This is an posts page</h1>
 
     <div v-for="post in posts" :key="post.id" class="post">
+      <!-- {{ post }} -->
       Post ID: {{ post.id }} <br />
       <div class="meta">
         <img v-if="post.photoURL" :src="post.photoURL" :alt="post.photoURL">
         <div>
-          Title: {{ post.title }} <br />          
+          Title: {{ post.title ?? "No title"}} <br />          
           Owner: {{ post.displayName ?? "No Display Name" }} <br />
+          Files {{ post.files?.length }}
         </div>
       </div>
       <div class="content">
@@ -78,6 +80,7 @@ export default class Posts extends Vue {
 <style lang="scss" scoped>
 .post {
   margin-bottom: 1.5em;
+  text-align: left;
 
   .meta {
     display: flex;

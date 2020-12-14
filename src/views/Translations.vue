@@ -1,6 +1,9 @@
 <template>
   <div class="page">
     <h1>Translations Page</h1>
+    Existing Language codes : {{ languageCodes }}
+    <br />
+    <br />
     <div class="input-group">
       <label for="newLanguange">New languange (code): </label>
       <input type="text" name="newLanguange" v-model="newLanguangeCode" />
@@ -8,7 +11,7 @@
     </div>
     <br />
     <br />
-    <div class="input-group">
+    <div v-if="languageCodes.length > 0" class="input-group">
       <label for="newTranslationCode">New Translation (code): </label>
       <input
         type="text"
@@ -35,7 +38,7 @@
 
 <script lang="ts">
 import { Vue } from "vue-class-component";
-import { proxy } from "../../services/functions";
+import { proxy } from "../services/functions";
 import firebase from "firebase/app";
 import "firebase/firestore";
 
@@ -107,11 +110,11 @@ export default class Categories extends Vue {
 
       try {
         await this.col.doc(lc).set(data, { merge: true });
-        console.log('this.translations[translationCode]', !this.translations[translationCode], translationCode);
         if (!this.translations[translationCode]) {
           this.translations[translationCode] = {};
         }
         this.translations[translationCode][lc] = data[translationCode];
+        this.newTranslationCode = "";
       } catch (e) {
         alert(e);
       }
