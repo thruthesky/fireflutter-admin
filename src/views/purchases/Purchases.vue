@@ -1,13 +1,47 @@
 <template>
   <div class="purchases">
     <h1>Purchases</h1>
-
     <form @submit.prevent="onSubmit">
-      <div class="options">
-        <input type="text" v-model="form.uid" placeholder="uid" />
-
-        <input type="text" v-model="startDate" placeholder="Start Date" />
-        <input type="text" v-model="endDate" placeholder="End Date" />
+      <div class="queryOptions">
+        <span>uid<input type="text" v-model="form.uid" placeholder="uid"/></span>
+        <span>
+          Status
+          <select name="status" id="status" v-model="form.status">
+            <option value="success">Success</option>
+            <option value="pending">Pending</option>
+            <option value="failure">Failure</option>
+          </select>
+        </span>
+        <!-- <span>
+          <input
+            type="text"
+            name="productList"
+            list="productList"
+            v-model="form.productID"
+            placeholder="Product"
+          />
+          <datalist id="productList">
+            <option value="lucky_box"></option>
+            <option value="jewelry_box"></option>
+            <option value="diamond_box"></option>
+          </datalist>
+        </span> -->
+        <span>
+          Product
+          <select name="productList" id="productList" v-model="form.productID">
+            <option value="lucky_box">Lucky Box</option>
+            <option value="jewelry_box">Jewelry Box</option>
+            <option value="diamond_box">Diamon Box</option>
+          </select>
+        </span>
+        <span>
+          Date Start
+          <input type="text" v-model="startDate" placeholder="Start Date" />
+        </span>
+        <span>
+          Date End
+          <input type="text" v-model="endDate" placeholder="End Date" />
+        </span>
       </div>
       <button>
         Search
@@ -64,29 +98,11 @@
       <span>
         <input
           type="checkbox"
-          id="hashCode"
-          name="hashCode"
-          v-model="options.hashCode"
-        />
-        <label for="hashCode">Hash Code</label>
-      </span>
-      <span>
-        <input
-          type="checkbox"
           id="purchaseID"
           name="purchaseID"
           v-model="options.purchaseID"
         />
         <label for="purchaseID">Purchase ID</label>
-      </span>
-      <span>
-        <input
-          type="checkbox"
-          id="purchasehashCode"
-          name="purchasehashCode"
-          v-model="options.purchasehashCode"
-        />
-        <label for="purchasehashCode">Purchase Hash Code</label>
       </span>
       <span>
         <input
@@ -130,9 +146,7 @@
         <th v-if="options.title">Title</th>
         <th v-if="options.description">Description</th>
         <th v-if="options.price">Price</th>
-        <th v-if="options.hashCode">HashCode</th>
         <th v-if="options.purchaseID">Purchase ID</th>
-        <th v-if="options.purchasehashCode">Purchase hashCode</th>
         <th v-if="options.purchaseStatus">Purchase Status</th>
         <th v-if="options.beginAt">BeginAt</th>
         <th v-if="options.endAt">EndAt</th>
@@ -157,14 +171,8 @@
           {{ transaction?.productDetails?.description }}
         </td>
         <td v-if="options.price">{{ transaction?.productDetails?.price }}</td>
-        <td v-if="options.hashCode">
-          {{ transaction?.productDetails?.hashCode }}
-        </td>
         <td v-if="options.purchaseID">
           {{ transaction?.purchaseDetails?.productID }}
-        </td>
-        <td v-if="options.purchasehashCode">
-          {{ transaction?.purchaseDetails?.hashCode }}
         </td>
         <td v-if="options.purchaseStatus">
           {{ transaction?.purchaseDetails?.pendingCompletePurchase }}
@@ -191,11 +199,18 @@ export default class Purchases extends Vue {
 
   transactions: any[] = [];
 
-  form = {};
+  form = {
+    status: "success",
+    productID: "lucky_box"
+  };
 
-  startDate = "2020/12/01";
-  endDate = "2020/12/14";
-  date1 = null;
+  d = new Date();
+  sd = new Date(this.d.getFullYear(), this.d.getMonth(), this.d.getDate() - 10);
+  startDate = `${this.sd.getFullYear()}/${this.sd.getMonth() + 1}/${this.add0(
+    this.sd.getDate()
+  )}`;
+  endDate = `${this.d.getFullYear()}/${this.d.getMonth() +
+    1}/${this.d.getDate()}`;
 
   options = {
     photo: false,
@@ -203,90 +218,96 @@ export default class Purchases extends Vue {
     title: false,
     description: false,
     price: false,
-    hashCode: false,
     purchaseID: false,
-    purchasehashCode: false,
     purchaseStatus: false,
     beginAt: true,
     endAt: false
   };
 
-  async created() {
+  datepickerSetting = {
+    id: "birthday",
+    name: "birthday",
+    class: "myDateInput",
+    value: "2020/10/01",
+    yearMinus: 0,
+    fromDate: "2020/02/10",
+    toDate: "2021/02/10",
+    disabledDate: [
+      "2020/10/02",
+      "2020/10/03",
+      "2020/10/04",
+      "2020/10/05",
+      "2020/10/06"
+    ],
+    locale: {
+      format: "YYYY/MM/DD",
+      weekday: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+      todayBtn: "Today",
+      clearBtn: "Clear",
+      closeBtn: "Close"
+    },
+    changeEvent: (value: any) => {
+      console.log(value + " selected!");
+    },
+    disableInput: false
+  };
+
+  created() {
+    console.log("created");
+    this.search();
+  }
+
+  add0(num: number) {
+    if (num >= 10) return num;
+    return "0" + num;
+  }
+
+  async search() {
     console.log("getting purchases");
-    // const got = await this.col.get();
+    const data = proxy(this.form);
 
     const dAt = new Date(this.startDate);
-    console.log(dAt.getFullYear(), dAt.getMonth(), dAt.getDate());
-    const beginAt = new Date(
-      dAt.getFullYear(),
-      dAt.getMonth(),
-      dAt.getDate(),
-      23,
-      59,
-      59
-    );
+    console.log(dAt);
+    const beginAt = new Date(dAt.getFullYear(), dAt.getMonth(), dAt.getDate());
     const _beginAt = new firebase.firestore.Timestamp(
       Math.round(beginAt.getTime() / 1000),
       0
     );
     const eAt = new Date(this.endDate);
-    console.log(eAt.getFullYear(), eAt.getMonth(), eAt.getDate());
+    console.log(eAt);
     const endAt = new Date(
       eAt.getFullYear(),
       eAt.getMonth(),
-      eAt.getDate(),
-      23,
-      59,
-      59
+      eAt.getDate() + 1
     );
+    console.log(endAt);
     const _endAt = new firebase.firestore.Timestamp(
       Math.round(endAt.getTime() / 1000),
       0
     );
-    const cr = this.col
-      .where("uid", "==", "aUUm0vjfU6PZqPTbhyvmFiWMyxS2")
-      .where("status", "==", "failure")
-      .where("beginAt", ">=", _beginAt)
-      .where("beginAt", "<=", _endAt);
+
+    let cr;
+    if (data.uid) {
+      cr = this.col
+        .where("uid", "==", data.uid)
+        .where("productDetails.id", "==", data.productID)
+        .where("status", "==", data.status)
+        .where("beginAt", ">=", _beginAt)
+        .where("beginAt", "<=", _endAt);
+    } else {
+      cr = this.col
+        .where("productDetails.id", "==", data.productID)
+        .where("status", "==", data.status)
+        .where("beginAt", ">=", _beginAt)
+        .where("beginAt", "<=", _endAt);
+    }
+
     const got = await cr.get();
     this.prepData(got);
   }
 
   async onSubmit() {
-    const data = proxy(this.form);
-    console.log("data", data);
-    // const got = await this.col.where("uid", "==", data.uid).get();
-
-    const startAt = new Date(this.startDate).getTime();
-    const endAt = new Date(this.endDate);
-
-    console.log("Date Range\n", startAt, endAt);
-
-    const cr = this.col.orderBy("beginAt", "desc");
-
-    // const cr = this.col;
-
-    // console.log(endAt.toLocaleString());
-
-    const _endAt = new firebase.firestore.Timestamp(
-      Math.round(endAt.getTime() / 1000),
-      0
-    );
-
-    // console.log(_endAt);
-
-    // console.log(new Date(_endAt.seconds * 1000).toLocaleString());
-
-    // if (data.uid) {
-    //   console.log("data.uid\n", data.uid);
-    //   cr.where("uid", "==", data.uid);
-    // }
-    // cr.where("beginAt", ">", startAt);
-    cr.where("beginAt", "<", _endAt);
-
-    const got = await cr.get();
-    console.log("got", got);
-    this.prepData(got);
+    this.search();
   }
 
   prepData(doc: any) {
@@ -311,8 +332,17 @@ export default class Purchases extends Vue {
 <style lang="scss" scoped>
 form {
   padding-bottom: 1em;
-  .options {
-    margin-bottom: 2em;
+  .queryOptions {
+    display: flex;
+    padding-bottom: 1em;
+    span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.25em 1em;
+      margin-right: 1.5em;
+      cursor: pointer;
+    }
   }
   button {
     padding: 0.5em 2em;
