@@ -215,7 +215,7 @@ export default class Purchases extends Vue {
   };
 
   created() {
-    console.log("created");
+    // console.log("created");
     this.search();
   }
 
@@ -225,24 +225,24 @@ export default class Purchases extends Vue {
   }
 
   async search() {
-    console.log("getting purchases");
+    // console.log("getting purchases");
     const data = proxy(this.form);
 
     const dAt = new Date(this.startDate);
-    console.log(dAt);
+    // console.log(dAt);
     const beginAt = new Date(dAt.getFullYear(), dAt.getMonth(), dAt.getDate());
     const _beginAt = new firebase.firestore.Timestamp(
       Math.round(beginAt.getTime() / 1000),
       0
     );
     const eAt = new Date(this.endDate);
-    console.log(eAt);
+    // console.log(eAt);
     const endAt = new Date(
       eAt.getFullYear(),
       eAt.getMonth(),
       eAt.getDate() + 1
     );
-    console.log(endAt);
+    // console.log(endAt);
     const _endAt = new firebase.firestore.Timestamp(
       Math.round(endAt.getTime() / 1000),
       0
@@ -271,7 +271,7 @@ export default class Purchases extends Vue {
 
   prepData(doc: any) {
     this.transactions = [];
-    console.log(this.transactions);
+    // console.log(this.transactions);
     doc.docs.forEach((d: any) => {
       const data = d.data();
       // console.log(data);
