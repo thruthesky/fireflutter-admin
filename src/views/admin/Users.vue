@@ -1,15 +1,31 @@
 <template>
   <div class="about">
-    <h1>This is an Users page</h1>
+    <h1>User list in /meta/user/public collection</h1>
 
-    <div v-for="user in users" :key="user.uid" class="user-info">
-      <img v-if="user.photoURL" :src="user.photoURL" :alt="user.photoURL" class="user-photo">
-      <div>        
-        UID: {{ user.uid }} <br />
-        Display Name: {{ user.displayName ?? "No Display Name" }} <br />
-        Greeting: {{ user.greeting ?? 'None' }}
-      </div>
-    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">UID / Name / Greeting</th>
+          <th scope="col">Name</th>
+          <th scope="col">Last</th>
+          <th scope="col">Handle</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="user in users" :key="user.uid">
+          <td>
+            <img v-if="user.photoURL" :src="user.photoURL" class="avatar" />
+          </td>
+          <td>
+            <div class="sm">{{ user.uid }}</div>
+            <div class="md bold">{{ user.displayName }}</div>
+            <div class="sm grey">{{ user.greeting ?? "" }}</div>
+          </td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
 
     <p v-if="fetchingUsers">loading users ...</p>
     <p v-if="!fetchingUsers">No more users ...</p>
@@ -36,15 +52,15 @@ export default class Users extends Vue {
     if (this.noMoreUsers) return;
     this.fetchingUsers = true;
 
-    let q = this.col.orderBy("listOrder", "desc");
+    let q = this.col.orderBy("updatedAt", "desc");
     if (this.users.length) {
-      q = q.startAfter(this.users[this.users.length - 1]["listOrder"]);
+      q = q.startAfter(this.users[this.users.length - 1]["updatedAt"]);
     }
     q = q.limit(30);
 
     const snapshot = await q.get();
     console.log("Snapshot size:", snapshot.size);
-    this.noMoreUsers = snapshot.size == 0;
+    this.noMoreUsers = snapshot.size < 30;
 
     for (const docSnapshot of snapshot.docs) {
       const data = docSnapshot.data();
@@ -73,15 +89,4 @@ export default class Users extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
-.user-info {
-  display: flex;
-  text-align: left;
-  margin-bottom: 1.5em;
-}
-
-.user-photo {
-  height: 50px;
-  width: 50px;
-}
-</style>
+<style lang="scss" scoped></style>

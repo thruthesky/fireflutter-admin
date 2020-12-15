@@ -1,6 +1,9 @@
 <template>
   <div v-if="!app.isAdmin">
-    Please login
+    <div v-if="app.loggedIn">
+      You have logged in as a user account.
+    </div>
+    Please login with admin account.
     <LoginForm />
   </div>
 

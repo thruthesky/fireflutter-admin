@@ -5,9 +5,18 @@ export class AppService {
     return store.state.user.uid !== void 0;
   }
   get notLoggedIn(): boolean {
-    return this.loggedIn;
+    return !this.loggedIn;
   }
   get isAdmin(): boolean {
     return store.state.userData.isAdmin;
+  }
+  get uid() {
+    return store.state.user.uid;
+  }
+
+  get user() {
+    return {
+      uid: this.uid
+    };
   }
 }

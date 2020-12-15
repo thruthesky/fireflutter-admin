@@ -1,17 +1,24 @@
 <template>
   <div class="home">
     Home
+    <div v-if="app.loggedIn">User logged: uid: {{ app.user.uid }}</div>
+    <div v-if="app.notLoggedIn">
+      <LoginForm />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import LoginForm from "@/components/LoginForm.vue"; // @ is an alias to /src
+import { AppService } from "@/services/app.service";
 
 @Options({
   components: {
     LoginForm
   }
 })
-export default class Home extends Vue {}
+export default class Home extends Vue {
+  app = new AppService();
+}
 </script>

@@ -72,24 +72,28 @@ export default class RegisterForm extends Vue {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
 }
 
 .c-a-padding a {
   padding: 12px;
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+}
+.sm {
+  font-size: 12px;
+}
+.md {
+  font-size: 16px;
+}
+.bold {
+  font-weight: bold;
+}
+.grey {
+  color: grey;
 }
 </style>
