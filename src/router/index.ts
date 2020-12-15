@@ -33,7 +33,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("../views/admin/Categories.vue")
       },
       {
-        path: "posts",
+        path: "posts/:category",
         name: "Posts",
         component: () => import("../views/admin/posts/Posts.vue")
       },
@@ -93,7 +93,7 @@ const routes: Array<RouteRecordRaw> = [
     path: "/contacts",
     name: "Contacts",
     component: () => import("../views/Contacts.vue")
-  },
+  }
 ];
 
 const router = createRouter({

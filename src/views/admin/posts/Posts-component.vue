@@ -22,7 +22,7 @@ import firebase from "firebase/app";
 import "firebase/firestore";
 
 @Options({
-  props: ["post"],
+  props: ["post"]
 })
 export default class PostComponent extends Vue {
   postsCol = firebase.firestore().collection("posts");
@@ -45,12 +45,12 @@ export default class PostComponent extends Vue {
       await this.postsCol.doc(this.post.id).delete();
       alert("post deleted!");
     } catch (e) {
+      console.log(e);
       alert(e);
     }
   }
 }
 </script>
-
 
 <style lang="scss" scoped>
 .post {

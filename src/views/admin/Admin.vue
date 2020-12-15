@@ -13,7 +13,7 @@
     <div id="nav">
       <router-link to="/admin/users">Users</router-link> |
       <router-link to="/admin/categories">Categories</router-link> |
-      <router-link to="/admin/posts">Posts</router-link> |
+      <router-link to="/admin/posts/all">Posts</router-link> |
       <router-link to="/admin/photos">Photos</router-link> |
       <router-link to="/admin/purchases">Purchases</router-link> |
       <router-link to="/admin/settings">Settings</router-link> |
