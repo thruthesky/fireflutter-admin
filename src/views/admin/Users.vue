@@ -27,8 +27,8 @@
       </tbody>
     </table>
 
-    <p v-if="fetchingUsers">loading users ...</p>
-    <p v-if="!fetchingUsers">No more users ...</p>
+    <p v-if="fetching">loading users ...</p>
+    <p v-if="noMoreUsers">No more users ...</p>
   </div>
 </template>
 
@@ -37,8 +37,9 @@ import { Vue } from "vue-class-component";
 import firebase from "firebase/app";
 import "firebase/firestore";
 export default class Users extends Vue {
+  limit = 30;
   users: any[] = [];
-  fetchingUsers = false;
+  fetching = false;
   noMoreUsers = false;
 
   col = firebase
@@ -48,19 +49,21 @@ export default class Users extends Vue {
     .collection("public");
 
   async fetchUsers() {
-    if (this.fetchingUsers) return;
+    if (this.fetching) return;
     if (this.noMoreUsers) return;
-    this.fetchingUsers = true;
+    this.fetching = true;
 
     let q = this.col.orderBy("updatedAt", "desc");
     if (this.users.length) {
       q = q.startAfter(this.users[this.users.length - 1]["updatedAt"]);
     }
-    q = q.limit(30);
+    q = q.limit(this.limit);
 
     const snapshot = await q.get();
+
+    this.fetching = false;
     console.log("Snapshot size:", snapshot.size);
-    this.noMoreUsers = snapshot.size < 30;
+    this.noMoreUsers = snapshot.size < this.limit;
 
     for (const docSnapshot of snapshot.docs) {
       const data = docSnapshot.data();
@@ -69,7 +72,6 @@ export default class Users extends Vue {
       // console.log("data.listOrder", data["listOrder"]);
       this.users.push(data);
     }
-    this.fetchingUsers = false;
   }
 
   async created() {

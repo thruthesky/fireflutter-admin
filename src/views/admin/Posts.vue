@@ -17,8 +17,8 @@
       <hr />
     </div>
 
-    <p v-if="fetchingPosts">loading posts ...</p>
-    <p v-if="!fetchingPosts">No more posts ...</p>
+    <p v-if="fetching">loading posts ...</p>
+    <p v-if="noMorePosts">No more posts ...</p>
   </div>
 </template>
 
@@ -27,33 +27,34 @@ import { Vue } from "vue-class-component";
 import firebase from "firebase/app";
 import "firebase/firestore";
 export default class Posts extends Vue {
+  limit = 30;
   posts: any[] = [];
-  fetchingPosts = false;
+  fetching = false;
   noMorePosts = false;
 
   col = firebase.firestore().collection("posts");
 
   async fetchPosts() {
-    if (this.fetchingPosts) return;
+    if (this.fetching) return;
     if (this.noMorePosts) return;
-    this.fetchingPosts = true;
+    this.fetching = true;
 
     let q = this.col.orderBy("createdAt", "desc");
     if (this.posts.length) {
       q = q.startAfter(this.posts[this.posts.length - 1]["createdAt"]);
     }
-    q = q.limit(30);
+    q = q.limit(this.limit);
 
     const snapshot = await q.get();
+    this.noMorePosts = snapshot.size < this.limit;
     console.log("Snapshot size:", snapshot.size);
-    this.noMorePosts = snapshot.size == 0;
 
     for (const docSnapshot of snapshot.docs) {
       const data = docSnapshot.data();
       data["id"] = docSnapshot.id;
       this.posts.push(data);
     }
-    this.fetchingPosts = false;
+    this.fetching = false;
   }
 
   async created() {
