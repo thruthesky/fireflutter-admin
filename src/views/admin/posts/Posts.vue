@@ -18,7 +18,7 @@
     <br />
 
     <div v-for="post in posts" :key="post.id">
-      <post-component :post="post"> </post-component>
+      <post-component :post="post" @on-deleted="onDeleted($event)"> </post-component>
     </div>
 
     <p v-if="fetchingPosts">loading posts ...</p>
@@ -105,6 +105,10 @@ export default class Posts extends Vue {
     if (bottomOfWindow) {
       this.fetchPosts(this.activeCategory);
     }
+  }
+
+  onDeleted(id: string) {
+    console.log('onDeleted', id);
   }
 }
 </script>

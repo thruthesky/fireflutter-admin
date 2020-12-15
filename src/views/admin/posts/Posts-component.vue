@@ -23,6 +23,7 @@ import "firebase/firestore";
 
 @Options({
   props: ["post"],
+  emits: ['on-deleted'],
 })
 export default class PostComponent extends Vue {
   postsCol = firebase.firestore().collection("posts");
@@ -39,14 +40,15 @@ export default class PostComponent extends Vue {
   }
 
   async onDelete() {
-    console.log("delete", this.post.id);
+    // console.log("delete", this.post.id);
 
-    try {
-      await this.postsCol.doc(this.post.id).delete();
-      alert("post deleted!");
-    } catch (e) {
-      alert(e);
-    }
+    // try {
+    //   await this.postsCol.doc(this.post.id).delete();
+    //   alert("post deleted!");
+    // } catch (e) {
+    //   alert(e);
+    // }
+    this.$emit('on-deleted', this.post.id);
   }
 }
 </script>
