@@ -1,4 +1,6 @@
-# firebase-admin
+# Firebase Admin
+
+This project is for managing the firebase for `FireFlutter` project. But it can be used for serving the clients(members) of the app.
 
 ## Project Install
 
@@ -42,8 +44,28 @@ npm run test:e2e
 npm run lint
 ```
 
-### Customize configuration
+## Deployment
 
-See [Configuration Reference](https://cli.vuejs.org/config/).
+- You can build and deploy anywhere you want.
+  - `npm run build`
+  - Copy public folder to web server home folder.
 
-# fireflutter-admin
+### Firebase Hosting
+
+To deploy fireflutter-admin to firebase, follow the instructions below.
+
+- Edit firebase project id
+
+```json
+{
+  "projects": {
+    "default": "... Input your project id here ..."
+  }
+}
+```
+
+- Then run
+
+```sh
+firebase deploy --only hosting
+```
