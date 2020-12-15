@@ -20,15 +20,17 @@
       />
       <button @click="onSave(newTranslationCode)">Add Translation Code</button>
     </div>
-    <br /><br />
-
+    <hr />
     <div v-for="(value, name) in translations" :key="name">
-      <b>{{ name }}</b>
-      <div v-for="lc in languageCodes" :key="lc">
+      <b>Code: {{ name }}</b>
+      <br />
+      <br />
+      <div v-for="lc in languageCodes" :key="lc" style="margin: .5em;">
         {{ lc }} : <input type="text" v-model="value[lc]" />
       </div>
+      <br />
       <button type="button" @click="onSave(name)">Save</button>
-      <br /><br />
+      <hr />
     </div>
 
     <p v-show="translations.length < 1">No translations yet</p>
