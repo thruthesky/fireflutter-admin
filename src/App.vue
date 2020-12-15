@@ -39,7 +39,7 @@ export default class RegisterForm extends Vue {
 
   created() {
     router.beforeEach((to, from, next) => {
-      console.log(from.path, "=>", to.path);
+      // console.log(from.path, "=>", to.path);
       this.currentRoute = to.path;
       next();
     });

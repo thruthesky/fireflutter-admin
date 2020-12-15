@@ -3,26 +3,25 @@
     <h1>This is an posts page</h1>
 
     <div>
-      <button
+      <a href="/admin/posts/all">All</a>
+      <a
+        :href="'/admin/posts/' + category"
         v-for="category in categories"
         :key="category"
-        type="button"
-        @click="fetchPosts(category)"
+        >{{ category }}</a
       >
-        {{ category }}
-      </button>
     </div>
 
     <br />
-    <h2>{{ activeCategory }}</h2>
+    <h2>{{ category }}</h2>
     <br />
 
     <div v-for="post in posts" :key="post.id">
       <post-component :post="post" @on-deleted="onDeleted($event)"> </post-component>
     </div>
 
-    <p v-if="fetchingPosts">loading posts ...</p>
-    <p v-if="!fetchingPosts">No more posts ...</p>
+    <p v-if="fetching">loading posts ...</p>
+    <p v-if="noMorePosts">No more posts ...</p>
   </div>
 </template>
 
@@ -34,10 +33,11 @@ import PostComponent from "./Posts-component.vue";
 
 @Options({
   components: {
-    PostComponent,
-  },
+    PostComponent
+  }
 })
 export default class Posts extends Vue {
+  limit = 30;
   categoriesCol = firebase.firestore().collection("categories");
   postsCol = firebase.firestore().collection("posts");
 
@@ -45,10 +45,10 @@ export default class Posts extends Vue {
   posts: any[] = [];
 
   fetchingCategories = false;
-  fetchingPosts = false;
+  fetching = false;
   noMorePosts = false;
 
-  activeCategory = "";
+  category = "";
 
   async fetchCategories() {
     if (this.fetchingCategories) return;
@@ -59,40 +59,37 @@ export default class Posts extends Vue {
     });
 
     this.fetchingCategories = false;
-    this.fetchPosts(this.categories[1]);
   }
 
-  async fetchPosts(category: string) {
-    // console.log('category,', category);
-    // console.log('this.activeCategory,', this.activeCategory);
-    if (!category) return;
-    if (this.fetchingPosts) return;
+  async fetchPosts() {
+    if (this.fetching) return;
     if (this.noMorePosts) return;
-    this.fetchingPosts = true;
+    this.fetching = true;
 
-    if (this.activeCategory != category) this.posts = [];
-    this.activeCategory = category;
+    let q = this.postsCol.limit(this.limit);
+    if (this.category) q = q.where("category", "==", this.category);
 
-    let q = this.postsCol.orderBy("createdAt", "desc");
+    q = q.orderBy("createdAt", "desc");
+
     if (this.posts.length) {
       q = q.startAfter(this.posts[this.posts.length - 1]["createdAt"]);
     }
-    q = q.where("category", "==", category);
-    q = q.limit(30);
 
     const snapshot = await q.get();
+    this.fetching = false;
     // console.log("Snapshot size:", snapshot.size);
-    this.noMorePosts = snapshot.size == 0;
+    this.noMorePosts = snapshot.size < this.limit;
 
     for (const docSnapshot of snapshot.docs) {
       const data = docSnapshot.data();
       data["id"] = docSnapshot.id;
       this.posts.push(data);
     }
-    this.fetchingPosts = false;
   }
 
   async created() {
+    this.category = this.$route.params.category as any;
+    this.fetchPosts();
     this.fetchCategories();
     window.addEventListener("scroll", this.handleScroll);
   }
@@ -103,7 +100,7 @@ export default class Posts extends Vue {
       document.documentElement.offsetHeight - 200;
 
     if (bottomOfWindow) {
-      this.fetchPosts(this.activeCategory);
+      this.fetchPosts();
     }
   }
 
@@ -112,4 +109,3 @@ export default class Posts extends Vue {
   }
 }
 </script>
-
