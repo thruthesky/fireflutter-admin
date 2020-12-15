@@ -15,23 +15,10 @@
             <option value="failure">Failure</option>
           </select>
         </span>
-        <!-- <span>
-          <input
-            type="text"
-            name="productList"
-            list="productList"
-            v-model="form.productID"
-            placeholder="Product"
-          />
-          <datalist id="productList">
-            <option value="lucky_box"></option>
-            <option value="jewelry_box"></option>
-            <option value="diamond_box"></option>
-          </datalist>
-        </span> -->
         <span>
           Product
           <select name="productList" id="productList" v-model="form.productID">
+            <option value="">Select Product</option>
             <option value="lucky_box">Lucky Box</option>
             <option value="jewelry_box">Jewelry Box</option>
             <option value="diamond_box">Diamon Box</option>
@@ -227,34 +214,6 @@ export default class Purchases extends Vue {
     endAt: false
   };
 
-  datepickerSetting = {
-    id: "birthday",
-    name: "birthday",
-    class: "myDateInput",
-    value: "2020/10/01",
-    yearMinus: 0,
-    fromDate: "2020/02/10",
-    toDate: "2021/02/10",
-    disabledDate: [
-      "2020/10/02",
-      "2020/10/03",
-      "2020/10/04",
-      "2020/10/05",
-      "2020/10/06"
-    ],
-    locale: {
-      format: "YYYY/MM/DD",
-      weekday: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-      todayBtn: "Today",
-      clearBtn: "Clear",
-      closeBtn: "Close"
-    },
-    changeEvent: (value: any) => {
-      console.log(value + " selected!");
-    },
-    disableInput: false
-  };
-
   created() {
     console.log("created");
     this.search();
@@ -293,25 +252,15 @@ export default class Purchases extends Vue {
       .where("beginAt", ">=", _beginAt)
       .where("beginAt", "<=", _endAt);
 
+    if (data.uid) {
+      q = q.where("uid", "==", data.uid);
+    }
+    if (data.productID) {
+      q = q.where("productDetails.id", "==", data.productID);
+    }
     if (data.status) {
       q = q.where("status", "==", data.status);
     }
-
-    // let cr;
-    // if (data.uid) {
-    //   cr = this.col
-    //     .where("uid", "==", data.uid)
-    //     .where("productDetails.id", "==", data.productID)
-    //     .where("status", "==", data.status)
-    //     .where("beginAt", ">=", _beginAt)
-    //     .where("beginAt", "<=", _endAt);
-    // } else {
-    //   cr = this.col
-    //     .where("productDetails.id", "==", data.productID)
-    //     .where("status", "==", data.status)
-    //     .where("beginAt", ">=", _beginAt)
-    //     .where("beginAt", "<=", _endAt);
-    // }
 
     const got = await q.get();
     this.prepData(got);
