@@ -6,17 +6,15 @@
       <!-- {{ post }} -->
       Post ID: {{ post.id }} <br />
       <div class="meta">
-        <img v-if="post.photoURL" :src="post.photoURL" :alt="post.photoURL">
+        <img v-if="post.photoURL" :src="post.photoURL" />
         <div>
-          Title: {{ post.title ?? "No title"}} <br />          
+          Title: {{ post.title ?? "No title" }} <br />
           Owner: {{ post.displayName ?? "No Display Name" }} <br />
           Files {{ post.files?.length }}
         </div>
       </div>
-      <div class="content">
-        Owner UID: {{ post.uid }} <br />
-      </div>
-      <hr>
+      <div class="content">Owner UID: {{ post.uid }} <br /></div>
+      <hr />
     </div>
 
     <p v-if="fetchingPosts">loading posts ...</p>
@@ -33,9 +31,7 @@ export default class Posts extends Vue {
   fetchingPosts = false;
   noMorePosts = false;
 
-  col = firebase
-    .firestore()
-    .collection("posts");
+  col = firebase.firestore().collection("posts");
 
   async fetchPosts() {
     if (this.fetchingPosts) return;
