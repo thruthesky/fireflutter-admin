@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
+import Admin from "../views/admin/Admin.vue";
+import AdminHome from "../views/admin/AdminHome.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -10,16 +12,57 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/about",
     name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue")
+    component: () => import("../views/About.vue")
   },
   {
-    path: "/users",
-    name: "Users",
-    component: () => import("../views/Users.vue")
+    path: "/admin",
+    name: "Admin",
+    component: Admin,
+    children: [
+      {
+        path: "",
+        component: AdminHome
+      },
+      {
+        path: "users",
+        component: () => import("../views/admin/Users.vue")
+      },
+      {
+        path: "categories",
+        name: "Categories",
+        component: () => import("../views/admin/Categories.vue")
+      },
+      {
+        path: "posts",
+        name: "Posts",
+        component: () => import("../views/admin/Posts.vue")
+      },
+      {
+        path: "photos",
+        name: "Photos",
+        component: () => import("../views/admin/Photos.vue")
+      },
+      {
+        path: "settings",
+        name: "Settings",
+        component: () => import("../views/admin/settings/Settings.vue")
+      },
+      {
+        path: "settings/forum/:category",
+        name: "CategorySettings",
+        component: () => import("../views/admin/settings/CategorySettings.vue")
+      },
+      {
+        path: "translations",
+        name: "Translations",
+        component: () => import("../views/admin/Translations.vue")
+      },
+      {
+        path: "purchases",
+        name: "Purchases",
+        component: () => import("../views/admin/purchases/Purchases.vue")
+      }
+    ]
   },
   {
     path: "/register",
@@ -32,44 +75,14 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/Profile.vue")
   },
   {
-    path: "/categories",
-    name: "Categories",
-    component: () => import("../views/Categories.vue")
-  },
-  {
-    path: "/posts",
-    name: "Posts",
-    component: () => import("../views/Posts.vue")
-  },
-  {
-    path: "/photos",
-    name: "Photos",
-    component: () => import("../views/Photos.vue")
-  },
-  {
-    path: "/settings",
-    name: "Settings",
-    component: () => import("../views/settings/Settings.vue")
-  },
-  {
-    path: "/settings/forum/:category",
-    name: "CategorySettings",
-    component: () => import("../views/settings/CategorySettings.vue")
-  },
-  {
-    path: "/translations",
-    name: "Translations",
-    component: () => import("../views/Translations.vue")
+    path: "/login",
+    name: "Login",
+    component: () => import("../views/Login.vue")
   },
   {
     path: "/logout",
     name: "Logout",
     component: () => import("../views/Logout.vue")
-  },
-  {
-    path: "/purchases",
-    name: "Purchases",
-    component: () => import("../views/purchases/Purchases.vue")
   }
 ];
 

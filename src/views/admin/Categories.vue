@@ -4,9 +4,10 @@
 
     <p>Forum categories:</p>
     <div v-for="category in categories" :key="category['id']" class="item">
-      ID: {{ category["id"] }} <br>
-      Title: <input type="text" v-model="category['title']" /> <br>
-      Description: <input type="text" v-model="category['description']" /> <br>
+      ID: {{ category["id"] }} <br />
+      Title: <input type="text" v-model="category['title']" /> <br />
+      Description: <input type="text" v-model="category['description']" />
+      <br />
     </div>
 
     <button type="button" @click="onSave()">Save</button>
@@ -17,7 +18,7 @@
 
 <script lang="ts">
 import { Vue } from "vue-class-component";
-import { proxy } from "../services/functions";
+import { proxy } from "../../services/functions";
 import firebase from "firebase/app";
 import "firebase/firestore";
 
@@ -45,12 +46,10 @@ export default class Categories extends Vue {
   onSave() {
     // console.log(proxy(this.categories));
     this.categories.map((category) => {
-      this.col
-        .doc(category["id"])
-        .update({
-          title: category.title ?? "",
-          description: category.description ?? ""
-        });
+      this.col.doc(category["id"]).update({
+        title: category.title ?? "",
+        description: category.description ?? ""
+      });
     });
   }
 }

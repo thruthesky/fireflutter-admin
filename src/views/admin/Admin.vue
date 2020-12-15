@@ -1,0 +1,42 @@
+<template>
+  <div v-if="!app.isAdmin">
+    Please login
+    <LoginForm />
+  </div>
+
+  <section v-if="app.isAdmin">
+    <hr />
+
+    <div id="nav">
+      <router-link to="/admin/users">Users</router-link> |
+      <router-link to="/admin/categories">Categories</router-link> |
+      <router-link to="/admin/posts">Posts</router-link> |
+      <router-link to="/admin/photos">Photos</router-link> |
+      <router-link to="/admin/purchases">Purchases</router-link> |
+      <router-link to="/admin/settings">Settings</router-link> |
+      <router-link to="/admin/translations">Translations</router-link>
+
+      <p v-if="app.loggedIn">
+        Current user Email: {{ $store.state.user.email }}
+      </p>
+      <span v-if="app.isAdmin">You are an ADMIN!</span>
+    </div>
+    <hr />
+    <router-view />
+  </section>
+</template>
+
+<script lang="ts">
+import { Options, Vue } from "vue-class-component";
+import LoginForm from "@/components/LoginForm.vue"; // @ is an alias to /src
+import { AppService } from "@/services/app.service";
+
+@Options({
+  components: {
+    LoginForm
+  }
+})
+export default class Login extends Vue {
+  app = new AppService();
+}
+</script>
