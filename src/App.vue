@@ -1,33 +1,21 @@
 <template>
   <div class="c-a-padding d-flex justify-content-between bg-light">
     <div class="d-flex">
-      <a class="navbar-brand" href="/">FireFlutter</a>
-      <a class="nav-link" href="/login">Login</a>
-      <a class="nav-link" href="/logout">Logout</a>
-      <a class="nav-link" href="/register">Register</a>
-      <a class="nav-link" href="/profile">Profile</a>
-      <a class="nav-link" href="/contact">Contacts</a>
-      <a class="nav-link" href="/policy">Policy</a>
-      <a class="nav-link" href="/about">About</a>
+      <router-link class="navbar-brand" to="/">FireFlutter</router-link>
+      <router-link class="nav-link" to="/login">Login</router-link>
+      <router-link class="nav-link" to="/logout">Logout</router-link>
+      <router-link class="nav-link" to="/register">Register</router-link>
+      <router-link class="nav-link" to="/profile">Profile</router-link>
+      <router-link class="nav-link" to="/contact">Contacts</router-link>
+      <router-link class="nav-link" to="/policy">Policy</router-link>
+      <router-link class="nav-link" to="/about">About</router-link>
     </div>
 
     <div>
-      <router-link class="nav-link" to="/admin/home">Admin</router-link>
+      <router-link class="nav-link" to="/admin">Admin</router-link>
     </div>
   </div>
 
-  <div id="nav">
-    <router-link to="/users">Users</router-link> |
-    <router-link to="/categories">Categories</router-link> |
-    <router-link to="/posts">Posts</router-link> |
-    <router-link to="/photos">Photos</router-link> |
-    <router-link to="/purchases">Purchases</router-link> |
-    <router-link to="/settings">Settings</router-link> |
-    <router-link to="/translations">Translations</router-link>
-
-    <p v-if="app.loggedIn">Current user Email: {{ $store.state.user.email }}</p>
-    <span v-if="app.isAdmin">You are an ADMIN!</span>
-  </div>
   <router-view />
 </template>
 
