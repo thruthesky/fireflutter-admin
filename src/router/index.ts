@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
+import Admin from "../views/admin/Admin.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -16,10 +17,27 @@ const routes: Array<RouteRecordRaw> = [
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/About.vue")
   },
+
+  {
+    path: "/admin",
+    name: "Admin",
+    component: Admin,
+    children: [
+      {
+        path: "home",
+        component: () => "../views/admin/AdminHome.vue"
+      }
+    ]
+  },
   {
     path: "/users",
     name: "Users",
-    component: () => import("../views/Users.vue")
+    component: () => import("../views/admin/Users.vue")
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: () => import("../views/Login.vue")
   },
   {
     path: "/register",
@@ -34,32 +52,32 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/categories",
     name: "Categories",
-    component: () => import("../views/Categories.vue")
+    component: () => import("../views/admin/Categories.vue")
   },
   {
     path: "/posts",
     name: "Posts",
-    component: () => import("../views/Posts.vue")
+    component: () => import("../views/admin/Posts.vue")
   },
   {
     path: "/photos",
     name: "Photos",
-    component: () => import("../views/Photos.vue")
+    component: () => import("../views/admin/Photos.vue")
   },
   {
     path: "/settings",
     name: "Settings",
-    component: () => import("../views/settings/Settings.vue")
+    component: () => import("../views/admin/settings/Settings.vue")
   },
   {
     path: "/settings/forum/:category",
     name: "CategorySettings",
-    component: () => import("../views/settings/CategorySettings.vue")
+    component: () => import("../views/admin/settings/CategorySettings.vue")
   },
   {
     path: "/translations",
     name: "Translations",
-    component: () => import("../views/Translations.vue")
+    component: () => import("../views/admin/Translations.vue")
   },
   {
     path: "/logout",
@@ -69,7 +87,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/purchases",
     name: "Purchases",
-    component: () => import("../views/purchases/Purchases.vue")
+    component: () => import("../views/admin/purchases/Purchases.vue")
   }
 ];
 

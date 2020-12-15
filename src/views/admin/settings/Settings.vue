@@ -5,20 +5,22 @@
     </h1>
 
     <router-link to="/settings/forum/forum">Edit Global Settings</router-link>
-    <br>
-    <br>
+    <br />
+    <br />
     <div v-for="category of categories" :key="category.id" class="item">
-      ID: {{ category.id }} <br>
-      <router-link :to="'/settings/forum/' + category.id">Edit Settings</router-link>
+      ID: {{ category.id }} <br />
+      <router-link :to="'/settings/forum/' + category.id"
+        >Edit Settings</router-link
+      >
     </div>
 
-    <p v-show="fetchingCategories"> Fetching other category settings ... </p>
+    <p v-show="fetchingCategories">Fetching other category settings ...</p>
   </div>
 </template>
 
 <script lang="ts">
 import { Vue } from "vue-class-component";
-import { proxy } from "../../services/functions";
+import { proxy } from "../../../services/functions";
 import firebase from "firebase/app";
 import "firebase/firestore";
 
@@ -46,7 +48,7 @@ export default class Categories extends Vue {
 <style lang="scss" scoped>
 .settings {
   text-align: left;
-  padding: .5em;
+  padding: 0.5em;
 }
 
 .item {

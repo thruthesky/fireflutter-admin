@@ -20,7 +20,8 @@
       />
       <button @click="onSave(newTranslationCode)">Add Translation Code</button>
     </div>
-    <hr>
+    <hr />
+    <hr />
     <div v-for="(value, name) in translations" :key="name">
       <b>Code: {{ name }}</b>
       <br />
@@ -30,7 +31,8 @@
       </div>
       <br />
       <button type="button" @click="onSave(name)">Save</button>
-      <hr>
+      <hr />
+      <hr />
     </div>
 
     <p v-show="translations.length < 1">No translations yet</p>
@@ -40,7 +42,7 @@
 
 <script lang="ts">
 import { Vue } from "vue-class-component";
-import { proxy } from "../services/functions";
+import { proxy } from "../../services/functions";
 import firebase from "firebase/app";
 import "firebase/firestore";
 
@@ -125,7 +127,6 @@ export default class Categories extends Vue {
   }
 }
 </script>
-
 
 <style lang="scss" scoped>
 .page {

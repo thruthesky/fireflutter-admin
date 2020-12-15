@@ -1,59 +1,29 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">FireFlutter</a>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link" href="#">Contacts</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Policy</a>
-          </li>
-        </ul>
-
-        <router-link to="/admin">Admin</router-link>
-      </div>
+  <div class="c-a-padding d-flex justify-content-between bg-light">
+    <div class="d-flex">
+      <a class="navbar-brand" href="/">FireFlutter</a>
+      <a class="nav-link" href="/login">Login</a>
+      <a class="nav-link" href="/logout">Logout</a>
+      <a class="nav-link" href="/register">Register</a>
+      <a class="nav-link" href="/profile">Profile</a>
+      <a class="nav-link" href="/contact">Contacts</a>
+      <a class="nav-link" href="/policy">Policy</a>
+      <a class="nav-link" href="/about">About</a>
     </div>
-  </nav>
-  <div class="container">
-    <div class="row">
-      <div class="col-sm">
-        One of three columns
-      </div>
-      <div class="col-sm">
-        One of three columns
-      </div>
-      <div class="col-sm">
-        One of three columns
-      </div>
+
+    <div>
+      <router-link class="nav-link" to="/admin/home">Admin</router-link>
     </div>
   </div>
 
   <div id="nav">
-    <router-link to="/">Home</router-link> |
     <router-link to="/users">Users</router-link> |
     <router-link to="/categories">Categories</router-link> |
     <router-link to="/posts">Posts</router-link> |
     <router-link to="/photos">Photos</router-link> |
     <router-link to="/purchases">Purchases</router-link> |
     <router-link to="/settings">Settings</router-link> |
-    <router-link to="/translations">Translations</router-link> |
-    <router-link to="/register">Register</router-link> |
-    <router-link to="/profile">Profile</router-link> |
-    <router-link to="/logout">Logout</router-link> |
-    <router-link to="/about">About</router-link>
+    <router-link to="/translations">Translations</router-link>
 
     <p v-if="app.loggedIn">Current user Email: {{ $store.state.user.email }}</p>
     <span v-if="app.isAdmin">You are an ADMIN!</span>
@@ -117,5 +87,9 @@ export default class RegisterForm extends Vue {
       color: #42b983;
     }
   }
+}
+
+.c-a-padding a {
+  padding: 12px;
 }
 </style>
