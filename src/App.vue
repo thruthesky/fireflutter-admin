@@ -1,5 +1,8 @@
 <template>
-  <div class="c-a-padding d-flex justify-content-between bg-light">
+  <div
+    class="c-a-padding d-flex justify-content-between bg-light"
+    v-if="currentRoute != '/private-policy'"
+  >
     <div class="d-flex">
       <router-link class="navbar-brand" to="/">FireFlutter</router-link>
       <router-link class="nav-link" to="/login">Login</router-link>
@@ -7,10 +10,11 @@
       <router-link class="nav-link" to="/register">Register</router-link>
       <router-link class="nav-link" to="/profile">Profile</router-link>
       <router-link class="nav-link" to="/contact">Contacts</router-link>
-      <router-link class="nav-link" to="/policy">Policy</router-link>
+      <router-link class="nav-link" to="/private-policy"
+        >Private Policy</router-link
+      >
       <router-link class="nav-link" to="/about">About</router-link>
     </div>
-
     <div>
       <router-link class="nav-link" to="/admin">Admin</router-link>
     </div>
@@ -27,11 +31,19 @@ import "firebase/auth";
 import "firebase/firestore";
 
 import { Vue } from "vue-class-component";
+import router from "@/router";
 
 export default class RegisterForm extends Vue {
   app = new AppService();
+  currentRoute = "";
 
   created() {
+    router.beforeEach((to, from, next) => {
+      console.log(from.path, "=>", to.path);
+      this.currentRoute = to.path;
+      next();
+    });
+
     firebase.auth().onAuthStateChanged(async (user) => {
       if (user) {
         store.state.user = user;

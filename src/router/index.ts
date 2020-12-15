@@ -83,6 +83,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/logout",
     name: "Logout",
     component: () => import("../views/Logout.vue")
+  },
+  {
+    path: "/private-policy",
+    name: "PrivatePolicy",
+    component: () => import("../views/PrivatePolicy.vue")
   }
 ];
 
