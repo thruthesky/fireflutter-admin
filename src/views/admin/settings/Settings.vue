@@ -4,12 +4,12 @@
       Forum Settings
     </h1>
 
-    <router-link to="/settings/forum/forum">Edit Global Settings</router-link>
+    <router-link to="/admin/settings/forum/forum">Edit Global Settings</router-link>
     <br />
     <br />
     <div v-for="category of categories" :key="category.id" class="item">
       ID: {{ category.id }} <br />
-      <router-link :to="'/settings/forum/' + category.id"
+      <router-link :to="'/admin/settings/forum/' + category.id"
         >Edit Settings</router-link
       >
     </div>

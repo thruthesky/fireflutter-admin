@@ -88,7 +88,12 @@ const routes: Array<RouteRecordRaw> = [
     path: "/private-policy",
     name: "PrivatePolicy",
     component: () => import("../views/PrivatePolicy.vue")
-  }
+  },
+  {
+    path: "/contacts",
+    name: "Contacts",
+    component: () => import("../views/Contacts.vue")
+  },
 ];
 
 const router = createRouter({

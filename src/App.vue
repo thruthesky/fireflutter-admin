@@ -9,7 +9,7 @@
       <router-link class="nav-link" to="/logout">Logout</router-link>
       <router-link class="nav-link" to="/register">Register</router-link>
       <router-link class="nav-link" to="/profile">Profile</router-link>
-      <router-link class="nav-link" to="/contact">Contacts</router-link>
+      <router-link class="nav-link" to="/contacts">Contacts</router-link>
       <router-link class="nav-link" to="/private-policy"
         >Private Policy</router-link
       >
