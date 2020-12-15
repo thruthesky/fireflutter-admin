@@ -255,13 +255,12 @@ export default class Purchases extends Vue {
     if (data.uid) {
       q = q.where("uid", "==", data.uid);
     }
-    if (data.productID) {
-      q = q.where("productDetails.id", "==", data.productID);
-    }
     if (data.status) {
       q = q.where("status", "==", data.status);
     }
-
+    if (data.productID) {
+      q = q.where("productDetails.id", "==", data.productID);
+    }
     const got = await q.get();
     this.prepData(got);
   }
