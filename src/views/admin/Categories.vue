@@ -19,7 +19,7 @@
       </tr>
     </table>
 
-    <button type="button" @click="onSave()">Save</button>
+    <button type="button" @click="onSave()">Save All</button>
 
     <p v-show="fetchingCategories">Loading category list ..</p>
   </div>
