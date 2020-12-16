@@ -1,7 +1,5 @@
 <template>
-  <div class="about">
-    <h1>This is an posts page</h1>
-
+  <div class="posts">
     <div>
       <a href="/admin/posts/all">All</a> |
       <a
@@ -11,9 +9,19 @@
         >{{ category }}</a
       >
     </div>
-
+    <h2>Category: {{ category ?? "All" }}</h2>
     <br />
-    <h2>{{ category }}</h2>
+    <label for="title">Title</label>
+    <input type="text" name="title" id="title" v-model="newPostData.title" />
+    <label for="content">Content</label>
+    <input
+      type="text"
+      name="content"
+      id="content"
+      v-model="newPostData.content"
+    />
+    <button type="button" @click="onCreate()">Create</button>
+    <br />
     <br />
     <button
       type="button"
@@ -32,11 +40,13 @@
             name="select-all"
             id="select-all"
             @change="onSelectAll($event.target.checked)"
+            :checked="selectedPostIDs.length"
           />
           <label for="select-all">All</label>
         </th>
         <th>Post ID</th>
         <th>User ID</th>
+        <th>Category</th>
         <th>Title</th>
         <th>Content</th>
         <th>Files</th>
@@ -47,6 +57,25 @@
           <input type="checkbox" :value="post.id" v-model="selectedPostIDs" />
         </td>
         <post-component :post="post" @on-deleted="onDeleted($event)" />
+      </tr>
+      <tr>
+        <th>
+          <input
+            type="checkbox"
+            name="select-all"
+            id="select-all"
+            @change="onSelectAll($event.target.checked)"
+            :checked="selectedPostIDs.length"
+          />
+          <label for="select-all">All</label>
+        </th>
+        <th>Post ID</th>
+        <th>User ID</th>
+        <th>Category</th>
+        <th>Title</th>
+        <th>Content</th>
+        <th>Files</th>
+        <th>Buttons</th>
       </tr>
     </table>
     <br />
@@ -71,6 +100,10 @@ export default class Posts extends Vue {
   categoriesCol = firebase.firestore().collection("categories");
   postsCol = firebase.firestore().collection("posts");
 
+  newPostData: any = {
+    title: "",
+    content: "",
+  };
   selectedPostIDs: any[] = [];
   categories: string[] = [];
   posts: any[] = [];
@@ -79,7 +112,7 @@ export default class Posts extends Vue {
   fetching = false;
   noMorePosts = false;
 
-  category = "";
+  category = null;
 
   async fetchCategories() {
     if (this.fetchingCategories) return;
@@ -133,6 +166,33 @@ export default class Posts extends Vue {
 
     if (bottomOfWindow) {
       this.fetchPosts();
+    }
+  }
+
+  /**
+   * Creates new post
+   *
+   * TODO: add files.
+   */
+  async onCreate() {
+    const data: any = {};
+    Object.assign(data, this.newPostData);
+
+    data.category = this.category;
+    data.uid = firebase.auth().currentUser?.uid;
+    data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+    data.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+
+    // console.log(data);
+    try {
+      const post = await this.postsCol.add(data);
+      data.id = post.id;
+      this.posts.unshift(data);
+      this.newPostData.title = "";
+      this.newPostData.content = "";
+      alert("New post created!");
+    } catch (e) {
+      alert(e);
     }
   }
 

@@ -1,6 +1,7 @@
 <template>
   <td>{{ post.id }}</td>
   <td>{{ post.uid }}</td>
+  <td>{{ post.category }}</td>
   <td v-if="!inEdit">{{ post.title }}</td>
   <td v-if="!inEdit">{{ post.content }}</td>
   <td v-if="inEdit">
@@ -9,7 +10,7 @@
   <td v-if="inEdit">
     <input type="text" v-model="editData.content" />
   </td>
-  <td>{{ post.files.length }}</td>
+  <td>{{ post.files?.length ?? 0 }}</td>
   <td v-if="!inEdit">
     <button type="button" @click="inEdit = true">EDIT</button>
     <button type="button" @click="onDelete()">DELETE</button>
@@ -33,7 +34,7 @@ export default class PostComponent extends Vue {
   postsCol = firebase.firestore().collection("posts");
   post!: any;
 
-  editData: any;
+  editData: any = {};
 
   inEdit = false;
 
@@ -42,8 +43,9 @@ export default class PostComponent extends Vue {
   }
 
   async onSave() {
-    console.log(this.editData);
+    // console.log(this.editData);
     try {
+      this.editData.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
       await this.postsCol.doc(this.post.id).set(this.editData, { merge: true });
       Object.assign(this.post, this.editData);
       this.inEdit = false;
