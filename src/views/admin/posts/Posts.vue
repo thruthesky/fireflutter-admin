@@ -1,5 +1,6 @@
 <template>
   <div class="posts">
+    <!-- posts categories -->
     <div>
       <a href="/admin/posts/all">All</a> |
       <a
@@ -11,18 +12,29 @@
     </div>
     <h2>Category: {{ category ?? "All" }}</h2>
     <br />
-    <label for="title">Title</label>
-    <input type="text" name="title" id="title" v-model="newPostData.title" />
-    <label for="content">Content</label>
-    <input
-      type="text"
-      name="content"
-      id="content"
-      v-model="newPostData.content"
-    />
-    <button type="button" @click="onCreate()">Create</button>
+
+    <!-- post create -->
+    <div class="post-create">
+      <label for="title">Title</label>
+      <input type="text" name="title" id="title" v-model="newPostData.title" />
+      <label for="content">Content</label>
+      <input
+        type="text"
+        name="content"
+        id="content"
+        v-model="newPostData.content"
+      />
+      <select v-if="!category" v-model="newPostData.category">
+        <option disabled value="">Category</option>
+        <option v-for="category of categories" :key="category">
+          {{ category }}
+        </option>
+      </select>
+      <button type="button" @click="onCreate()">Create</button>
+    </div>
     <br />
-    <br />
+
+    <!-- posts table -->
     <button
       type="button"
       @click="onDeleteAll()"
@@ -40,42 +52,24 @@
             name="select-all"
             id="select-all"
             @change="onSelectAll($event.target.checked)"
-            :checked="selectedPostIDs.length"
+            :checked="selectedPostIDs.length == posts.length"
           />
           <label for="select-all">All</label>
         </th>
-        <th>Post ID</th>
-        <th>User ID</th>
-        <th>Category</th>
-        <th>Title</th>
-        <th>Content</th>
+        <th>Post ID / User ID / Category</th>
+        <th>Title / Content</th>
         <th>Files</th>
         <th>Buttons</th>
       </tr>
-      <tr v-for="post in posts" :key="post.id">
+      <tr
+        v-for="post in posts"
+        :key="post.id"
+        style="border-bottom: 1px solid black"
+      >
         <td>
           <input type="checkbox" :value="post.id" v-model="selectedPostIDs" />
         </td>
         <post-component :post="post" @on-deleted="onDeleted($event)" />
-      </tr>
-      <tr>
-        <th>
-          <input
-            type="checkbox"
-            name="select-all"
-            id="select-all"
-            @change="onSelectAll($event.target.checked)"
-            :checked="selectedPostIDs.length"
-          />
-          <label for="select-all">All</label>
-        </th>
-        <th>Post ID</th>
-        <th>User ID</th>
-        <th>Category</th>
-        <th>Title</th>
-        <th>Content</th>
-        <th>Files</th>
-        <th>Buttons</th>
       </tr>
     </table>
     <br />
@@ -103,6 +97,7 @@ export default class Posts extends Vue {
   newPostData: any = {
     title: "",
     content: "",
+    category: "",
   };
   selectedPostIDs: any[] = [];
   categories: string[] = [];
@@ -177,8 +172,11 @@ export default class Posts extends Vue {
   async onCreate() {
     const data: any = {};
     Object.assign(data, this.newPostData);
+    if (this.category) data.category = this.category;
 
-    data.category = this.category;
+    if (!data.category) {
+      return alert("Please choose category");
+    }
     data.uid = firebase.auth().currentUser?.uid;
     data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
     data.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
@@ -197,10 +195,9 @@ export default class Posts extends Vue {
   }
 
   onSelectAll(checked: boolean) {
+    this.selectedPostIDs = [];
     if (checked) {
       this.posts.forEach((post) => this.selectedPostIDs.push(post.id));
-    } else {
-      this.selectedPostIDs = [];
     }
   }
 
@@ -213,6 +210,9 @@ export default class Posts extends Vue {
       this.postsCol.doc(id).delete();
       this.onDeleted(id);
     });
+
+    this.selectedPostIDs = [];
+    alert('Selected Posts deleted!');
   }
 
   onDeleted(id: string) {

@@ -1,14 +1,20 @@
 <template>
-  <td>{{ post.id }}</td>
-  <td>{{ post.uid }}</td>
-  <td>{{ post.category }}</td>
-  <td v-if="!inEdit">{{ post.title }}</td>
-  <td v-if="!inEdit">{{ post.content }}</td>
-  <td v-if="inEdit">
-    <input type="text" v-model="editData.title" />
+  <td>
+    <b>ID:</b> {{ post.id }} <br />
+    <b>User ID:</b> {{ post.uid }} <br />
+    <b>Category:</b> {{ post.category }}
+  </td>
+  <td v-if="!inEdit">
+    <p><b>Title:</b>
+    {{ post.title }}</p>
+    <b>Content:</b>
+    <p>{{ post.content }}</p>
   </td>
   <td v-if="inEdit">
-    <input type="text" v-model="editData.content" />
+    <b>Title:</b>
+    <input type="text" v-model="editData.title" style="width: 100%" /> <br />
+    <b>Content:</b>
+    <textarea v-model="editData.content" style="width: 100%"> </textarea>
   </td>
   <td>{{ post.files?.length ?? 0 }}</td>
   <td v-if="!inEdit">
