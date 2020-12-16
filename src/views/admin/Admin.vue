@@ -1,8 +1,6 @@
 <template>
   <div v-if="!app.isAdmin">
-    <div v-if="app.loggedIn">
-      You have logged in as a user account.
-    </div>
+    <div v-if="app.loggedIn">You have logged in as a user account.</div>
     Please login with admin account.
     <LoginForm />
   </div>
@@ -20,9 +18,9 @@
       <router-link to="/admin/translations">Translations</router-link>
 
       <p v-if="app.loggedIn">
-        Current user Email: {{ $store.state.user.email }}
+        Current user Email: {{ $store.state.user.email }} |
+        <span v-if="app.isAdmin">You are an ADMIN!</span>
       </p>
-      <span v-if="app.isAdmin">You are an ADMIN!</span>
     </div>
     <hr />
     <router-view />
@@ -36,8 +34,8 @@ import { AppService } from "@/services/app.service";
 
 @Options({
   components: {
-    LoginForm
-  }
+    LoginForm,
+  },
 })
 export default class Login extends Vue {
   app = new AppService();

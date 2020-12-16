@@ -2,14 +2,13 @@
   <div class="posts">
     <!-- posts categories -->
     <div>
-      <a href="/admin/posts/all">All</a> |
-      <a
-        :href="'/admin/posts/' + category"
-        v-for="category in categories"
-        :key="category"
-        >{{ category }}</a
-      >
+      <a href="/admin/posts/all">All</a>
+      <span v-for="category in categories" :key="category">
+        |
+        <a :href="'/admin/posts/' + category">{{ category }}</a>
+      </span>
     </div>
+    <br />
     <h2>Category: {{ category ?? "All" }}</h2>
     <br />
 
@@ -47,14 +46,16 @@
     <table class="posts-table">
       <tr>
         <th>
-          <input
-            type="checkbox"
-            name="select-all"
-            id="select-all"
-            @change="onSelectAll($event.target.checked)"
-            :checked="selectedPostIDs.length == posts.length"
-          />
-          <label for="select-all">All</label>
+          <label for="select-all">
+            <input
+              type="checkbox"
+              name="select-all"
+              id="select-all"
+              @change="onSelectAll($event.target.checked)"
+              :checked="selectedPostIDs.length == posts.length"
+            />
+            All</label
+          >
         </th>
         <th>Post ID / User ID / Category</th>
         <th>Title / Content</th>
@@ -212,7 +213,7 @@ export default class Posts extends Vue {
     });
 
     this.selectedPostIDs = [];
-    alert('Selected Posts deleted!');
+    alert("Selected Posts deleted!");
   }
 
   onDeleted(id: string) {
