@@ -3,11 +3,12 @@
     <h1>Purchases</h1>
     <form @submit.prevent="onSubmit">
       <div class="queryOptions">
-        <span
-          >uid<input type="text" v-model="form.uid" placeholder="uid"
+        <span>
+          <label for="uid">uid</label>
+          <input type="text" v-model="form.uid" placeholder="uid" id="uid"
         /></span>
         <span>
-          Status
+          <label for="status">Status</label>
           <select name="status" id="status" v-model="form.status">
             <option value="">Select Status</option>
             <option value="success">Success</option>
@@ -16,7 +17,7 @@
           </select>
         </span>
         <span>
-          Product
+          <label for="productList">Product</label>
           <select name="productList" id="productList" v-model="form.productID">
             <option value="">Select Product</option>
             <option value="lucky_box">Lucky Box</option>
@@ -25,12 +26,22 @@
           </select>
         </span>
         <span>
-          Date Start
-          <input type="text" v-model="startDate" placeholder="Start Date" />
+          <label for="startDate">Date Start</label>
+          <input
+            type="text"
+            v-model="startDate"
+            placeholder="Start Date"
+            id="startDate"
+          />
         </span>
         <span>
-          Date End
-          <input type="text" v-model="endDate" placeholder="End Date" />
+          <label for="endDate">Date End</label>
+          <input
+            type="text"
+            v-model="endDate"
+            placeholder="End Date"
+            id="endDate"
+          />
         </span>
       </div>
       <button>
@@ -123,6 +134,50 @@
       </span>
     </div>
 
+    <h3>Show Payment Summary</h3>
+    <div class="payment-summary">
+      <div>
+        <button @click="showPaymentSummary = !showPaymentSummary">
+          Daily Successful Payment
+        </button>
+        <div class="daily-success-payment" v-show="showPaymentSummary">
+          <div class="day" v-for="(day, d) in successPayment" :key="d">
+            <div class="currency" v-for="(currency, c) in day" :key="c">
+              {{ c }}: {{ currency }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button @click="showProductSummary = !showProductSummary">
+          Product Purchased
+        </button>
+        <div class="daily-product-purchase" v-show="showProductSummary">
+          <div class="day" v-for="(day, d) in productPurchase" :key="d">
+            <div class="product" v-for="(product, p) in day" :key="p">
+              {{ p }}: {{ product }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div></div>
+      <div>
+        <button @click="showUserSummary = !showUserSummary">
+          User Summary
+        </button>
+        <div class="user-summary" v-show="showUserSummary">
+          <div class="user" v-for="(user, uid) in userPurchase" :key="uid">
+            <div>{{ user.name }}({{ user.total }})</div>
+            <div class="currency" v-for="(cash, c) in user.currency" :key="c">
+              {{ c }}: {{ cash }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <table class="transaction">
       <tr>
         <th>id</th>
@@ -188,11 +243,20 @@ export default class Purchases extends Vue {
   col = firebase.firestore().collection("purchase");
 
   transactions: any[] = [];
+  successPayment: { [key: string]: { [key: string]: number } } = {};
+  productPurchase: { [key: string]: { [key: string]: number } } = {};
+  userPurchase: { [key: string]: { [key: string]: any } } = {};
 
   form = {
     status: "",
     productID: ""
   };
+
+  showPaymentSummary = false;
+  showProductSummary = false;
+  showUserSummary = false;
+
+  date143 = new Date();
 
   d = new Date();
   sd = new Date(this.d.getFullYear(), this.d.getMonth(), this.d.getDate() - 10);
@@ -271,29 +335,88 @@ export default class Purchases extends Vue {
 
   prepData(doc: any) {
     this.transactions = [];
-    // console.log(this.transactions);
+    this.successPayment = {};
+    this.productPurchase = {};
+    this.userPurchase = {};
+    console.log(this.transactions);
     doc.docs.forEach((d: any) => {
       const data = d.data();
-      // console.log(data);
-      data["id"] = d.id;
+      const bdate = new Date(data.beginAt.seconds * 1000);
       data["beginAtDate"] = data?.beginAt?.seconds
-        ? new Date(data.beginAt.seconds * 1000).toLocaleString()
+        ? bdate.toLocaleString()
         : "";
       data["endAtDate"] = data?.endAt?.seconds
         ? new Date(data.endAt.seconds * 1000).toLocaleString()
         : "";
+
+      data["id"] = d.id;
+      const day =
+        "" +
+        bdate.getUTCFullYear() +
+        "-" +
+        (bdate.getUTCMonth() + 1) +
+        "-" +
+        bdate.getUTCDate();
+      if (data.status == "success") {
+        const currencyCode =
+          data.productDetails.skProduct.priceLocale.currencyCode;
+        const price = parseInt(data.productDetails.skProduct.price);
+        const product = data.productDetails.id;
+        const uid = data.uid;
+        console.log(product);
+        /// Success Payment Summary
+        if (this.successPayment[day] == null) this.successPayment[day] = {};
+
+        if (this.successPayment[day][currencyCode] == null)
+          this.successPayment[day][currencyCode] = 0;
+
+        this.successPayment[day][currencyCode] += price;
+        /// End of Success Payment Summary
+
+        /// Product Purchase Summary
+        if (this.productPurchase[day] == null) this.productPurchase[day] = {};
+
+        if (this.productPurchase[day][product] == null)
+          this.productPurchase[day][product] = 0;
+        this.productPurchase[day][product]++;
+        /// End of Purchase Summary
+
+        /// User Purchase
+        if (this.userPurchase[uid] == null) {
+          this.userPurchase[uid] = {
+            total: 0,
+            currency: {},
+            name: data.displayName
+          };
+        }
+        this.userPurchase[uid]["total"]++;
+        if (this.userPurchase[uid]["currency"][currencyCode] == null)
+          this.userPurchase[uid]["currency"][currencyCode] = 0;
+
+        this.userPurchase[uid]["currency"][currencyCode] += price;
+
+        /// End of User Purchase
+      }
+
       this.transactions.push(data);
     });
+
+    console.log(this.successPayment);
+    console.log(this.productPurchase);
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.purchases {
+  padding: 1em;
+}
 form {
   padding-bottom: 1em;
   .queryOptions {
     display: flex;
     padding-bottom: 1em;
+    flex-wrap: wrap;
     span {
       display: flex;
       align-items: center;
@@ -301,6 +424,10 @@ form {
       padding: 0.25em 1em;
       margin-right: 1.5em;
       cursor: pointer;
+      label {
+        padding-right: 0.5em;
+        cursor: pointer;
+      }
     }
   }
   button {
@@ -319,13 +446,25 @@ form {
     margin-right: 1.5em;
     cursor: pointer;
     label {
+      padding-left: 0.5em;
       cursor: pointer;
     }
   }
 }
 
+.payment-summary {
+  button {
+    margin-bottom: 1em;
+  }
+  .daily-success-payment,
+  .daily-product-purchase {
+    padding-bottom: 1em;
+  }
+}
+
 table {
   width: 100%;
+  padding: 1em 0;
   text-align: center;
   border-spacing: 5px;
   white-space: nowrap;
