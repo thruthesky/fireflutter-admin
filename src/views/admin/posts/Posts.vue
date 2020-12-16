@@ -17,7 +17,8 @@
     <br />
 
     <div v-for="post in posts" :key="post.id">
-      <post-component :post="post" @on-deleted="onDeleted($event)"> </post-component>
+      <post-component :post="post" @on-deleted="onDeleted($event)">
+      </post-component>
     </div>
 
     <p v-if="fetching">loading posts ...</p>
@@ -29,12 +30,12 @@
 import { Vue, Options } from "vue-class-component";
 import firebase from "firebase/app";
 import "firebase/firestore";
-import PostComponent from "./Posts-component.vue";
+import PostComponent from "./Post-component.vue";
 
 @Options({
   components: {
-    PostComponent
-  }
+    PostComponent,
+  },
 })
 export default class Posts extends Vue {
   limit = 30;
@@ -88,7 +89,8 @@ export default class Posts extends Vue {
   }
 
   async created() {
-    this.category = this.$route.params.category as any;
+    const cat = this.$route.params.category as any;
+    if (cat != "all") this.category = cat;
     this.fetchPosts();
     this.fetchCategories();
     window.addEventListener("scroll", this.handleScroll);
@@ -105,7 +107,9 @@ export default class Posts extends Vue {
   }
 
   onDeleted(id: string) {
-    console.log('onDeleted', id);
+    // console.log('onDeleted', id);
+    const idx = this.posts.findIndex((post) => post.id == id);
+    this.posts.splice(idx, 1);
   }
 }
 </script>
