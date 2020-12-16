@@ -13,15 +13,22 @@
     <br />
 
     <!-- post create -->
-    <div class="post-create">
-      <label for="title">Title</label>
-      <input type="text" name="title" id="title" v-model="newPostData.title" />
-      <label for="content">Content</label>
+    <div class="post-create" style="width: 500px">
+      Title<br />
       <input
         type="text"
+        name="title"
+        id="title"
+        v-model="newPostData.title"
+        style="width: 100%"
+      />
+      <br /> <br />
+      Content<br />
+      <textarea
         name="content"
         id="content"
         v-model="newPostData.content"
+        style="width: 100%"
       />
       <select v-if="!category" v-model="newPostData.category">
         <option disabled value="">Category</option>
