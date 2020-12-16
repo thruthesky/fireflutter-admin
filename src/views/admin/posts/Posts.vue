@@ -3,7 +3,7 @@
     <h1>This is an posts page</h1>
 
     <div>
-      <a href="/admin/posts/all">All</a>
+      <a href="/admin/posts/all">All</a> |
       <a
         :href="'/admin/posts/' + category"
         v-for="category in categories"
@@ -15,12 +15,41 @@
     <br />
     <h2>{{ category }}</h2>
     <br />
-
-    <div v-for="post in posts" :key="post.id">
-      <post-component :post="post" @on-deleted="onDeleted($event)">
-      </post-component>
-    </div>
-
+    <button
+      type="button"
+      @click="onDeleteAll()"
+      :disabled="!selectedPostIDs.length"
+    >
+      DELETE SELECTED
+    </button>
+    <br />
+    <br />
+    <table class="posts-table">
+      <tr>
+        <th>
+          <input
+            type="checkbox"
+            name="select-all"
+            id="select-all"
+            @change="onSelectAll($event.target.checked)"
+          />
+          <label for="select-all">All</label>
+        </th>
+        <th>Post ID</th>
+        <th>User ID</th>
+        <th>Title</th>
+        <th>Content</th>
+        <th>Files</th>
+        <th>Buttons</th>
+      </tr>
+      <tr v-for="post in posts" :key="post.id">
+        <td>
+          <input type="checkbox" :value="post.id" v-model="selectedPostIDs" />
+        </td>
+        <post-component :post="post" @on-deleted="onDeleted($event)" />
+      </tr>
+    </table>
+    <br />
     <p v-if="fetching">loading posts ...</p>
     <p v-if="noMorePosts">No more posts ...</p>
   </div>
@@ -42,6 +71,7 @@ export default class Posts extends Vue {
   categoriesCol = firebase.firestore().collection("categories");
   postsCol = firebase.firestore().collection("posts");
 
+  selectedPostIDs: any[] = [];
   categories: string[] = [];
   posts: any[] = [];
 
@@ -106,10 +136,42 @@ export default class Posts extends Vue {
     }
   }
 
+  onSelectAll(checked: boolean) {
+    if (checked) {
+      this.posts.forEach((post) => this.selectedPostIDs.push(post.id));
+    } else {
+      this.selectedPostIDs = [];
+    }
+  }
+
+  onDeleteAll() {
+    const conf = confirm("Delete selected posts?");
+
+    if (!conf) return;
+
+    this.selectedPostIDs.forEach((id) => {
+      this.postsCol.doc(id).delete();
+      this.onDeleted(id);
+    });
+  }
+
   onDeleted(id: string) {
-    // console.log('onDeleted', id);
     const idx = this.posts.findIndex((post) => post.id == id);
     this.posts.splice(idx, 1);
   }
 }
 </script>
+
+
+<style lang="scss" scoped>
+.posts-table {
+  width: 100%;
+  tr {
+    padding: 0.25em !important;
+  }
+
+  tr > th {
+    border: 1px solid black;
+  }
+}
+</style>

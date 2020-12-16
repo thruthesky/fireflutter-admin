@@ -1,36 +1,23 @@
 <template>
-  <div class="post">
-    Post ID: {{ post.id }} | Category: {{ post.category }} <br />
-    <div class="meta">
-      <img v-if="post.photoURL" :src="post.photoURL" :alt="post.photoURL" />
-      <div>
-        <b>Owner:</b> {{ post.displayName ?? "No Display Name" }} | <b>UID:</b>
-        {{ post.uid }} <br />
-
-        <div v-if="!inEdit">
-          <b>Title</b>: {{ post.title ?? "No title" }}, <b>Content</b>:
-          {{ post.content }} <br />
-          Files {{ post.files?.length }}
-        </div>
-        <div v-if="inEdit">
-          <p>
-            Title:
-            <input type="text" v-model="editData.title" />
-            Content:
-            <input type="text" v-model="editData.content" />
-          </p>
-          <button type="button" @click="inEdit = false">CANCEL</button>
-          <button type="button" @click="onSave()">SAVE</button>
-        </div>
-      </div>
-    </div>
-    <br />
-    <div v-if="!inEdit">
-      <button type="button" @click="inEdit = true">EDIT</button>
-      <button type="button" @click="onDelete()">DELETE</button>
-    </div>
-    <hr />
-  </div>
+  <td>{{ post.id }}</td>
+  <td>{{ post.uid }}</td>
+  <td v-if="!inEdit">{{ post.title }}</td>
+  <td v-if="!inEdit">{{ post.content }}</td>
+  <td v-if="inEdit">
+    <input type="text" v-model="editData.title" />
+  </td>
+  <td v-if="inEdit">
+    <input type="text" v-model="editData.content" />
+  </td>
+  <td>{{ post.files.length }}</td>
+  <td v-if="!inEdit">
+    <button type="button" @click="inEdit = true">EDIT</button>
+    <button type="button" @click="onDelete()">DELETE</button>
+  </td>
+  <td v-if="inEdit">
+    <button type="button" @click="inEdit = false">Cancel</button>
+    <button type="button" @click="onSave()">Save</button>
+  </td>
 </template>
 
 <script lang="ts">
@@ -67,6 +54,10 @@ export default class PostComponent extends Vue {
   }
 
   async onDelete() {
+    const conf = confirm("Delete post?");
+
+    if (!conf) return;
+
     try {
       await this.postsCol.doc(this.post.id).delete();
       this.$emit("on-deleted", this.post.id);
@@ -78,19 +69,3 @@ export default class PostComponent extends Vue {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.post {
-  margin-bottom: 1.5em;
-  text-align: left;
-
-  .meta {
-    display: flex;
-
-    img {
-      width: 75px;
-      height: 75px;
-    }
-  }
-}
-</style>
