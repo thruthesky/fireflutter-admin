@@ -98,16 +98,6 @@ export default class Posts extends Vue {
     } catch (e) {
       console.log("error on deleting file: , ", e);
     }
-
-    // const ref = firebase.storage().refFromURL(url);
-
-    // try {
-    //   await ref.delete();
-    //   console.log("delete success");
-    //   this.photos;
-    // } catch (e) {
-    //   this.app.error(e);
-    // }
   }
 }
 </script>
