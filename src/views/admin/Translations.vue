@@ -1,40 +1,48 @@
 <template>
-  <div class="page">
+  <div class="translations">
     <h1>Translations Page</h1>
-    Existing Language codes : {{ languageCodes }}
-    <br />
-    <br />
-    <div class="input-group">
-      <label for="newLanguange">New languange (code): </label>
-      <input type="text" name="newLanguange" v-model="newLanguangeCode" />
-      <button @click="addNewLanguageCode">Add Language Code</button>
-    </div>
-    <br />
-    <br />
-    <div v-if="languageCodes.length > 0" class="input-group">
-      <label for="newTranslationCode">New Translation (code): </label>
-      <input
-        type="text"
-        name="newTranslationCode"
-        v-model="newTranslationCode"
-      />
-      <button @click="onSave(newTranslationCode)">Add Translation Code</button>
-    </div>
-    <hr />
-    <hr />
-    <div v-for="(value, name) in translations" :key="name">
-      <b>Code: {{ name }}</b>
-      <br />
-      <br />
-      <div v-for="lc in languageCodes" :key="lc" style="margin: .5em;">
-        {{ lc }} : <input type="text" v-model="value[lc]" />
-      </div>
-      <br />
-      <button type="button" @click="onSave(name)">Save</button>
-      <hr />
-      <hr />
-    </div>
-
+    <br>
+    <br>
+    <table class="table">
+      <tr>
+        <td>
+          <label for="newLanguange">New languange (code): </label>
+          <input type="text" name="newLanguange" v-model="newLanguangeCode" />
+          <button @click="addNewLanguageCode">Add Language Code</button>
+        </td>
+        <td style="width: 1em;"></td>
+        <td>
+          <label for="newTranslationCode">New Translation (code): </label>
+          <input
+            type="text"
+            name="newTranslationCode"
+            v-model="newTranslationCode"
+          />
+          <button @click="onSave(newTranslationCode)">
+            Add Translation Code
+          </button>
+        </td>
+      </tr>
+    </table>
+    <br>
+    <table class="table">
+      <tr>
+        <th>CODE</th>
+        <th v-for="lc of languageCodes" :key="lc">
+          {{ lc }}
+        </th>
+        <th>ACTIONS</th>
+      </tr>
+      <tr v-for="(value, name) in translations" :key="name">
+        <td>{{ name }}</td>
+        <td v-for="lc in languageCodes" :key="lc">
+          <input class="input-item" type="text" v-model="value[lc]" />
+        </td>
+        <td>
+          <button type="button" @click="onSave(name)">Save</button>
+        </td>
+      </tr>
+    </table>
     <p v-show="translations.length < 1">No translations yet</p>
     <p v-show="fetchingTranslations">Loading translation list ..</p>
   </div>
@@ -128,17 +136,16 @@ export default class Categories extends Vue {
 }
 </script>
 
+
 <style lang="scss" scoped>
-.page {
-  text-align: left;
+.table {
+  width: 100%;
+  & tr > th {
+    border: 1px solid black;
+  }
 }
 
-.input-group {
-  display: inline;
-}
-
-.item {
-  padding: 0.5em;
-  margin: 0.5em;
+.input-item {
+  width: 100%;
 }
 </style>
