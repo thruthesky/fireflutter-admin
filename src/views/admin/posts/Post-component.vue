@@ -5,8 +5,7 @@
     <b>Category:</b> {{ post.category }}
   </td>
   <td v-if="!inEdit">
-    <p><b>Title:</b>
-    {{ post.title }}</p>
+    <p><b>Title:</b> {{ post.title }}</p>
     <b>Content:</b>
     <p>{{ post.content }}</p>
   </td>
@@ -16,7 +15,15 @@
     <b>Content:</b>
     <textarea v-model="editData.content" style="width: 100%"> </textarea>
   </td>
-  <td>{{ post.files?.length ?? 0 }}</td>
+  <td>
+    <img
+      v-for="file in post?.files"
+      :key="file"
+      :src="file"
+      alt="file"
+      style="height: 100px; width: 100px"
+    />
+  </td>
   <td v-if="!inEdit">
     <button type="button" @click="inEdit = true">EDIT</button>
     <button type="button" @click="onDelete()">DELETE</button>
