@@ -100,7 +100,6 @@ export class AppService {
     arr = url.split(folder);
     url = folder + arr[1];
     url = url.replace("%2F", "/");
-    console.log(url);
     return url;
   }
 

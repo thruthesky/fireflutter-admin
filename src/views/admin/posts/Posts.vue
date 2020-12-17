@@ -245,6 +245,7 @@ export default class Posts extends Vue {
       customMetadata: customMeta,
     });
 
+    /// TODO: upload progress indicator
     task.on("next", (snapshot) => {
       console.log(
         "upload progress",

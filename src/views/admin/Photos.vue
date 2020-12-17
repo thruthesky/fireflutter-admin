@@ -84,15 +84,15 @@ export default class Posts extends Vue {
   }
 
   async onClickDelete(url: string) {
+    url = this.app.getStorageFileFromUrl(url, this.path);
     try {
-      url = this.app.getStorageFileFromUrl(url, this.path);
       await this.app.fileDelete(url);
-      const pos = this.photos.findIndex((e) => e == url);
+      const pos = this.photos.findIndex((e) => e.includes(url.split("/")[1]));
       this.photos.splice(pos, 1);
 
-      console.log("success file deletion.");
+      this.app.alert("success file deletion.");
     } catch (e) {
-      console.log("error on deleting file: , ", e);
+      this.app.error(e);
     }
   }
 }

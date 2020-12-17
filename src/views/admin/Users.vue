@@ -72,24 +72,19 @@ export default class Users extends Vue {
     this.fetching = true;
 
     let q = this.col.limit(this.limit);
-    // .orderBy("updatedAt", "desc");
     if (this.lastSnapshot) {
       q = q.startAfter(this.lastSnapshot);
     }
-    // q = q.limit(this.limit);
 
     const snapshot = await q.get();
 
     this.fetching = false;
-    console.log("Snapshot size:", snapshot.size);
     this.noMoreUsers = snapshot.size < this.limit;
 
     for (const docSnapshot of snapshot.docs) {
       this.lastSnapshot = docSnapshot;
       const data = docSnapshot.data();
       data["uid"] = docSnapshot.id;
-      // console.log("data.firstname", data["firstName"]);
-      // console.log("data.listOrder", data["listOrder"]);
       this.users.push(data);
     }
   }

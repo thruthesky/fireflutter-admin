@@ -53,7 +53,6 @@ export default class Categories extends Vue {
     this.fetchCategories();
   }
   onSave() {
-    // console.log(proxy(this.categories));
     this.categories.map((category) => {
       this.col.doc(category["id"]).update({
         title: category.title ?? "",

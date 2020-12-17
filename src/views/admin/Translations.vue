@@ -109,7 +109,6 @@ export default class Categories extends Vue {
   }
 
   onSave(translationCode: string) {
-    // console.log("translationCode", translationCode);
 
     this.languageCodes.forEach(async (lc) => {
       const data: any = {};
@@ -118,7 +117,6 @@ export default class Categories extends Vue {
       } else {
         data[translationCode] = this.translations[translationCode][lc];
       }
-      // console.log(data);
 
       try {
         await this.col.doc(lc).set(data, { merge: true });
