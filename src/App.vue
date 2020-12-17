@@ -125,4 +125,24 @@ export default class RegisterForm extends Vue {
 .left {
   left: 0;
 }
+
+.form-hint {
+  color: grey;
+}
+.form-title {
+  margin-top: 0.25em;
+}
+
+input {
+  border: 1px solid grey;
+  font-size: 1.5em;
+}
+.form-submit {
+  margin-top: 1em;
+  border: 0;
+  font-size: 0.9em;
+  padding: 0.5em 2em;
+  color: white;
+  background-color: blue;
+}
 </style>

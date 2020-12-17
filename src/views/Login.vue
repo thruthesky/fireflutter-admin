@@ -1,5 +1,5 @@
 <template>
-  <section class="layout-content">
+  <section class="layout-content mt-5">
     <LoginForm />
   </section>
 </template>

@@ -5,10 +5,8 @@
     </div>
 
     <p class="text-center text-white">
-      FireVue
+      <router-link class="text-white" to="/about">The fire project</router-link>
     </p>
-
-    <div v-if="app.loggedIn">User logged: uid: {{ app.user.uid }}</div>
   </section>
 </template>
 
