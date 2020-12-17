@@ -66,16 +66,21 @@
     </div>
     <br />
 
+    <!-- delete selected button -->
+    <div class="d-flex m-2">
+      <button
+        style="margin-right: 1.5em"
+        type="button"
+        @click="onDeleteAll()"
+        :disabled="!selectedPostIDs.length"
+      >
+        DELETE SELECTED
+      </button>
+      <input style="width: 50%;" type="text" placeholder="Search" />
+      <button>Search</button>
+    </div>
+
     <!-- posts table -->
-    <button
-      type="button"
-      @click="onDeleteAll()"
-      :disabled="!selectedPostIDs.length"
-    >
-      DELETE SELECTED
-    </button>
-    <br />
-    <br />
     <table class="posts-table">
       <tr>
         <th>
