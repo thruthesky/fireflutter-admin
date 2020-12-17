@@ -1,15 +1,24 @@
 <template>
   <div class="posts">
     <!-- posts categories -->
-    <div>
+    <!-- <div>
       <a href="/admin/posts/all">All</a>
       <span v-for="category in categories" :key="category">
         |
         <a :href="'/admin/posts/' + category">{{ category }}</a>
       </span>
     </div>
-    <br />
-    <h2>Category: {{ category ?? "All" }}</h2>
+    <br /> -->
+
+    <h2>
+      Category:
+      <select v-model="search.category" @change="onSearch()">
+        <option value="">All</option>
+        <option v-for="category of categories" :key="category">
+          {{ category }}
+        </option>
+      </select>
+    </h2>
     <br />
 
     <!-- post create -->
@@ -55,7 +64,7 @@
           id="image_upload"
           v-on:change="onImageChanged($event)"
         />
-        <select v-if="!category" v-model="newPostData.category">
+        <select v-if="!search.category" v-model="newPostData.category">
           <option disabled value="">Category</option>
           <option v-for="category of categories" :key="category">
             {{ category }}
@@ -66,7 +75,7 @@
     </div>
     <br />
 
-    <!-- delete selected button -->
+    <!-- delete selected button / search bar -->
     <div class="d-flex m-2">
       <button
         style="margin-right: 1.5em"
@@ -76,8 +85,13 @@
       >
         DELETE SELECTED
       </button>
-      <input style="width: 50%;" type="text" placeholder="Search" />
-      <button>Search</button>
+      <input
+        style="margin-right: 0.5em"
+        type="text"
+        placeholder="Search User ID"
+        v-model="search.uid"
+      />
+      <button type="button" @click="onSearch()">Search</button>
     </div>
 
     <!-- posts table -->
@@ -139,12 +153,18 @@ export default class Posts extends Vue {
   forumPhotosFolder = "forum-photos";
   uploadProgress = 0;
 
+  search = {
+    uid: "",
+    category: "",
+  };
+
   newPostData: any = {
     title: "",
     content: "",
     category: "",
     files: [],
   };
+
   selectedPostIDs: any[] = [];
   categories: string[] = [];
   posts: any[] = [];
@@ -153,7 +173,13 @@ export default class Posts extends Vue {
   fetching = false;
   noMorePosts = false;
 
-  category = null;
+  async created() {
+    const cat = this.$route.params.category as any;
+    if (cat != "all") this.search.category = cat;
+    this.fetchPosts();
+    this.fetchCategories();
+    window.addEventListener("scroll", this.handleScroll);
+  }
 
   async fetchCategories() {
     if (this.fetchingCategories) return;
@@ -166,13 +192,24 @@ export default class Posts extends Vue {
     this.fetchingCategories = false;
   }
 
+  onSearch() {
+    console.log(this.search);
+    this.posts = [];
+    this.noMorePosts = false;
+    this.fetchPosts();
+  }
+
   async fetchPosts() {
     if (this.fetching) return;
     if (this.noMorePosts) return;
     this.fetching = true;
 
     let q = this.postsCol.limit(this.limit);
-    if (this.category) q = q.where("category", "==", this.category);
+    /// category filter
+    if (this.search.category)
+      q = q.where("category", "==", this.search.category);
+    /// uid filter
+    if (this.search.uid) q = q.where("uid", "==", this.search.uid);
 
     q = q.orderBy("createdAt", "desc");
 
@@ -182,7 +219,7 @@ export default class Posts extends Vue {
 
     const snapshot = await q.get();
     this.fetching = false;
-    // console.log("Snapshot size:", snapshot.size);
+    console.log("Snapshot size:", snapshot.size);
     this.noMorePosts = snapshot.size < this.limit;
 
     for (const docSnapshot of snapshot.docs) {
@@ -190,14 +227,6 @@ export default class Posts extends Vue {
       data["id"] = docSnapshot.id;
       this.posts.push(data);
     }
-  }
-
-  async created() {
-    const cat = this.$route.params.category as any;
-    if (cat != "all") this.category = cat;
-    this.fetchPosts();
-    this.fetchCategories();
-    window.addEventListener("scroll", this.handleScroll);
   }
 
   handleScroll(e: any) {
@@ -218,7 +247,7 @@ export default class Posts extends Vue {
   async onCreate() {
     const data: any = {};
     Object.assign(data, this.newPostData);
-    if (this.category) data.category = this.category;
+    if (this.search.category) data.category = this.search.category;
 
     if (!data.category) {
       return alert("Please choose category");
