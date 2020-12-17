@@ -1,11 +1,11 @@
 <template>
-  <p>Active Path :</p>
-
-  <a v-for="path in paths" :key="path" :href="'/admin/photos/' + path">
-    {{ path }}
-  </a>
-
-  <p>Image Count : 00</p>
+  <span v-for="path in paths" :key="path">
+    <a :href="'/admin/photos/' + path">
+      {{ path }}
+    </a>
+    |
+  </span>
+  <br /><br />
 
   <div class="grid">
     <div v-for="url of photos" :key="url" class="image-holder">
@@ -56,10 +56,11 @@ export default class Posts extends Vue {
     this.loading = true;
     const folderRef = this.storageRef.child(this.path);
     const options: any = {
-      maxResults: 20
+      maxResults: 20,
     };
     if (this.nextPageToken) options["pageToken"] = this.nextPageToken;
     const res = await folderRef.list(options);
+
     this.loading = false;
     if (!res.items || res.items.length < this.limit) {
       this.noMorePhotos = true;
@@ -84,12 +85,7 @@ export default class Posts extends Vue {
 
   async onClickDelete(url: string) {
     try {
-      let arr = url.split("?");
-      url = arr[0];
-      arr = url.split(this.path);
-      url = this.path + arr[1];
-      url = url.replace("%2F", "/");
-
+      url = this.app.getStorageFileFromUrl(url, this.path);
       await this.app.fileDelete(url);
       const pos = this.photos.findIndex((e) => e == url);
       this.photos.splice(pos, 1);
@@ -98,16 +94,6 @@ export default class Posts extends Vue {
     } catch (e) {
       console.log("error on deleting file: , ", e);
     }
-
-    // const ref = firebase.storage().refFromURL(url);
-
-    // try {
-    //   await ref.delete();
-    //   console.log("delete success");
-    //   this.photos;
-    // } catch (e) {
-    //   this.app.error(e);
-    // }
   }
 }
 </script>

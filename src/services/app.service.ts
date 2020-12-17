@@ -25,7 +25,7 @@ export class AppService {
    */
   get user() {
     return {
-      uid: this.uid
+      uid: this.uid,
     };
   }
 
@@ -92,5 +92,25 @@ export class AppService {
   }
   alert(message: string) {
     alert(message);
+  }
+
+  getStorageFileFromUrl(url: string, folder: string): string {
+    let arr = url.split("?");
+    url = arr[0];
+    arr = url.split(folder);
+    url = folder + arr[1];
+    url = url.replace("%2F", "/");
+    console.log(url);
+    return url;
+  }
+
+  getRandomString(len = 8, prefix = "") {
+    const charset = "abcdefghijklmnopqrstuvwxyz0123456789";
+    let t = "";
+    for (let i = 0; i < len; i++) {
+      t += charset[Math.floor(Math.random() * (charset.length + 1))];
+    }
+    if (prefix != null && prefix != "") t = prefix + t;
+    return t;
   }
 }

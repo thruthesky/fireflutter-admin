@@ -13,7 +13,7 @@
     <br />
 
     <!-- post create -->
-    <div class="post-create" style="width: 500px">
+    <div class="post-create" style="width: 50%">
       Title<br />
       <input
         type="text"
@@ -31,19 +31,38 @@
         v-model="newPostData.content"
         style="width: 100%"
       />
-      <input
-        type="file"
-        name="image_upload"
-        id="image_upload"
-        v-on:change="onImageChanged($event)"
-      />
-      <select v-if="!category" v-model="newPostData.category">
-        <option disabled value="">Category</option>
-        <option v-for="category of categories" :key="category">
-          {{ category }}
-        </option>
-      </select>
-      <button type="button" @click="onCreate()">Create</button>
+      <div v-if="newPostData.files.length" class="d-flex m-2">
+        <div
+          v-for="url in newPostData.files"
+          :key="url"
+          class="position-relative"
+          style="width: 150px; height: 150px"
+        >
+          <img :src="url" style="width: 100%; height: 100%" />
+          <button
+            type="button"
+            class="position-absolute top left"
+            @click="onClickDeleteFile(url)"
+          >
+            DELETE
+          </button>
+        </div>
+      </div>
+      <div class="d-flex">
+        <input
+          type="file"
+          name="image_upload"
+          id="image_upload"
+          v-on:change="onImageChanged($event)"
+        />
+        <select v-if="!category" v-model="newPostData.category">
+          <option disabled value="">Category</option>
+          <option v-for="category of categories" :key="category">
+            {{ category }}
+          </option>
+        </select>
+        <button type="button" @click="onCreate()">Create</button>
+      </div>
     </div>
     <br />
 
@@ -97,7 +116,9 @@
 import { Vue, Options } from "vue-class-component";
 import firebase from "firebase/app";
 import "firebase/firestore";
+import "firebase/storage";
 import PostComponent from "./Post-component.vue";
+import { AppService } from "@/services/app.service";
 
 @Options({
   components: {
@@ -105,14 +126,18 @@ import PostComponent from "./Post-component.vue";
   },
 })
 export default class Posts extends Vue {
+  app = new AppService();
   limit = 30;
   categoriesCol = firebase.firestore().collection("categories");
   postsCol = firebase.firestore().collection("posts");
+  storage = firebase.storage();
+  forumPhotosFolder = "forum-photos";
 
   newPostData: any = {
     title: "",
     content: "",
     category: "",
+    files: [],
   };
   selectedPostIDs: any[] = [];
   categories: string[] = [];
@@ -203,15 +228,53 @@ export default class Posts extends Vue {
       this.posts.unshift(data);
       this.newPostData.title = "";
       this.newPostData.content = "";
+      this.newPostData.files = [];
       alert("New post created!");
     } catch (e) {
       alert(e);
     }
   }
 
-  onImageChanged(event: any) {
+  async onImageChanged(event: any) {
     const file: File = event.target.files[0];
-    console.log(file);
+    const filename = this.app.getRandomString();
+
+    const ref = this.storage.ref(this.forumPhotosFolder + "/" + filename);
+    const customMeta = { uid: firebase.auth().currentUser?.uid as string };
+    const task = ref.put(file, {
+      customMetadata: customMeta,
+    });
+
+    task.on("next", (snapshot) => {
+      console.log(
+        "upload progress",
+        snapshot.bytesTransferred / snapshot.totalBytes
+      );
+    });
+
+    try {
+      await task;
+      const url = await ref.getDownloadURL();
+      this.newPostData.files.push(url);
+      this.app.alert("Upload success!");
+    } catch (e) {
+      this.app.error(e);
+    }
+  }
+
+  async onClickDeleteFile(url: string) {
+    console.log(url);
+    url = this.app.getStorageFileFromUrl(url, this.forumPhotosFolder);
+
+    try {
+      await this.app.fileDelete(url);
+      const pos = this.newPostData.files.findIndex((e: string) => e == url);
+      this.newPostData.files.splice(pos, 1);
+
+      console.log("success file deletion.");
+    } catch (e) {
+      console.log("error on deleting file: , ", e);
+    }
   }
 
   onSelectAll(checked: boolean) {
