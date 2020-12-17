@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import Home from "../views/Home.vue";
+import Home from "../tmp/Home.vue";
 import Admin from "../views/admin/Admin.vue";
 import AdminHome from "../views/admin/AdminHome.vue";
 

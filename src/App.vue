@@ -1,6 +1,6 @@
 <template>
-  <section class="layout">
-    <div class="header-wrapper">
+  <section class="layout" :data-route="currentRoute">
+    <div class="header-wrapper" v-if="currentRoute != '/private-policy'">
       <Header />
     </div>
     <main>
@@ -18,7 +18,7 @@ import "firebase/firestore";
 
 import { Vue, Options } from "vue-class-component";
 import router from "@/router";
-import Header from "@/components/Header.vue"; // @ is an alias to /src
+import Header from "@/tmp/Header.vue"; // @ is an alias to /src
 
 @Options({
   components: {
