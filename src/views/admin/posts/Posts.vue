@@ -22,13 +22,20 @@
         v-model="newPostData.title"
         style="width: 100%"
       />
-      <br /> <br />
+      <br />
+      <br />
       Content<br />
       <textarea
         name="content"
         id="content"
         v-model="newPostData.content"
         style="width: 100%"
+      />
+      <input
+        type="file"
+        name="image_upload"
+        id="image_upload"
+        v-on:change="onImageChanged($event)"
       />
       <select v-if="!category" v-model="newPostData.category">
         <option disabled value="">Category</option>
@@ -200,6 +207,11 @@ export default class Posts extends Vue {
     } catch (e) {
       alert(e);
     }
+  }
+
+  onImageChanged(event: any) {
+    const file: File = event.target.files[0];
+    console.log(file);
   }
 
   onSelectAll(checked: boolean) {
