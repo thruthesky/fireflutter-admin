@@ -38,7 +38,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("../views/admin/posts/Posts.vue")
       },
       {
-        path: "photos",
+        path: "photos/:path",
         name: "Photos",
         component: () => import("../views/admin/Photos.vue")
       },

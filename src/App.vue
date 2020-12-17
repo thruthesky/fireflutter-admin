@@ -96,4 +96,10 @@ export default class RegisterForm extends Vue {
 .grey {
   color: grey;
 }
+.top {
+  top: 0;
+}
+.left {
+  left: 0;
+}
 </style>

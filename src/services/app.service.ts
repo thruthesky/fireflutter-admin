@@ -29,6 +29,14 @@ export class AppService {
     };
   }
 
+  async fileDelete(url: string) {
+    const func = firebase
+      .app()
+      .functions("asia-northeast3")
+      .httpsCallable("fileDelete");
+
+    await func(url);
+  }
   /**
    * Delete the user(s)
    *
@@ -81,5 +89,8 @@ export class AppService {
     } else {
       alert(e);
     }
+  }
+  alert(message: string) {
+    alert(message);
   }
 }

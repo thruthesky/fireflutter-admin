@@ -32,6 +32,7 @@ export default class LoginForm extends Vue {
       const credential = await firebase
         .auth()
         .signInWithEmailAndPassword(this.form.email, this.form.password);
+      this.app.alert("login success");
     } catch (e) {
       this.app.error(e);
     }

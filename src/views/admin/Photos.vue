@@ -1,91 +1,113 @@
 <template>
+  <p>Active Path :</p>
 
-  <p>Active Path : {{ activePath }}</p>
-
-  <button v-for="path in paths" :key="path" @click="onClickChangeFolder(path)">
+  <a v-for="path in paths" :key="path" :href="'/admin/photos/' + path">
     {{ path }}
-  </button>
+  </a>
 
-  <p>Image Count {{ imageCounts[activePath] }} </p>
+  <p>Image Count : 00</p>
 
   <div class="grid">
-    <div v-for="url of urls[activePath]" :key="url" class="image-holder">
-      <img :src="url" :alt="url" class="image">
+    <div v-for="url of photos" :key="url" class="image-holder">
+      <div class="photo position-relative">
+        <img :src="url" class="image" />
+        <button
+          class="position-absolute top left"
+          type="button"
+          @click="onClickDelete(url)"
+        >
+          Delete
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-
 import { Vue } from "vue-class-component";
 import firebase from "firebase/app";
-import 'firebase/storage'
+import "firebase/storage";
+import { AppService } from "@/services/app.service";
 
 export default class Posts extends Vue {
+  app = new AppService();
+  limit = 20;
   storageRef = firebase.storage().ref();
-  paths = ['forum-photos', 'user-profile-photos'];
-  activePath = '';
+  paths = ["forum-photos", "user-profile-photos"];
 
-  nextPageTokens: any = {
-    'forum-photos': '',
-    'user-profile-photos': '',
-  }
-  imageCounts: any = {
-    'forum-photos': 0,
-    'user-profile-photos': 0,
-  }
-  urls: any = {
-    'forum-photos': [],
-    'user-profile-photos': [],
-  }
-
-  loadingPhotos = false;
-
-  onClickChangeFolder(path: string) {
-    this.activePath = path;
-    if (!this.urls[path].length) {
-      this.fetchImages(path);
-    }
-  }
-
-  async fetchImages(path: string) {
-    this.activePath = path;
-    console.log('path', path);
-
-    if (this.loadingPhotos) return;
-    if (this.nextPageTokens[path] == null) return;
-
-    this.loadingPhotos = true;
-
-    const listRef = this.storageRef.child(path);
-    const res = await listRef.list({ maxResults: 20, pageToken: this.nextPageTokens[path] });
-
-    this.nextPageTokens[path] = res.nextPageToken;
-    console.log("next page token :", this.nextPageTokens[path]);
-
-    this.imageCounts[path] += res.items.length;
-    console.log("image count: ", this.imageCounts[path]);
-
-    res.items.forEach(async item => {
-        const downloadURL = await item.getDownloadURL();
-        this.urls[path].push(downloadURL);
-    })
-    this.loadingPhotos = false;
-  }
+  photos: string[] = [];
+  loading = false;
+  noMorePhotos = false;
+  nextPageToken: string | null = null;
 
   created() {
-    this.fetchImages(this.paths[0]);
+    this.fetchImages();
     window.addEventListener("scroll", this.handleScroll);
   }
-  
+
+  get path(): string {
+    return this.$route.params["path"] as string;
+  }
+
+  async fetchImages() {
+    if (this.loading) return;
+    if (this.noMorePhotos) return;
+
+    this.loading = true;
+    const folderRef = this.storageRef.child(this.path);
+    const options: any = {
+      maxResults: 20
+    };
+    if (this.nextPageToken) options["pageToken"] = this.nextPageToken;
+    const res = await folderRef.list(options);
+    this.loading = false;
+    if (!res.items || res.items.length < this.limit) {
+      this.noMorePhotos = true;
+    }
+    this.nextPageToken = res.nextPageToken;
+
+    res.items.forEach(async (item) => {
+      const downloadURL = await item.getDownloadURL();
+      this.photos.push(downloadURL);
+    });
+  }
+
   handleScroll(e: any) {
     const bottomOfWindow =
       document.documentElement.scrollTop + window.innerHeight >
       document.documentElement.offsetHeight - 200;
 
     if (bottomOfWindow) {
-      this.fetchImages(this.activePath);
+      this.fetchImages();
     }
+  }
+
+  async onClickDelete(url: string) {
+    try {
+      let arr = url.split("?");
+      url = arr[0];
+      arr = url.split(this.path);
+      url = this.path + arr[1];
+      url = url.replace("%2F", "/");
+
+      await this.app.fileDelete(url);
+      const pos = this.photos.findIndex((e) => e == url);
+      this.photos.splice(pos, 1);
+
+      console.log("success file deletion.");
+    } catch (e) {
+      console.log("error on deleting file: , ", e);
+    }
+
+    // const ref = firebase.storage().refFromURL(url);
+
+    // try {
+    //   await ref.delete();
+    //   console.log("delete success");
+    //   this.photos;
+    // } catch (e) {
+    //   this.app.error(e);
+    // }
   }
 }
 </script>
@@ -93,32 +115,31 @@ export default class Posts extends Vue {
 <style lang="scss" scoped>
 .image-holder {
   box-sizing: border-box;
-  padding: .25em;
+  padding: 0.25em;
 }
 
-
 @media screen and (min-width: 1200px) {
-   .image-holder {
-      width: 10%;
-   }
+  .image-holder {
+    width: 10%;
+  }
 }
 
 @media screen and (max-width: 1200px) {
-   .image-holder {
-      width: 25%;
-   }
+  .image-holder {
+    width: 25%;
+  }
 }
 
 @media screen and (max-width: 900px) {
-   .image-holder {
-      width: 33%;
-   }
+  .image-holder {
+    width: 33%;
+  }
 }
 
 @media screen and (max-width: 500px) {
-   .image-holder {
-      flex: 50%;
-   }
+  .image-holder {
+    flex: 50%;
+  }
 }
 
 .image {
@@ -126,8 +147,8 @@ export default class Posts extends Vue {
 }
 
 .grid {
-   display: flex;
-   flex-wrap: wrap;
-   padding: 0 4px;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 4px;
 }
 </style>
