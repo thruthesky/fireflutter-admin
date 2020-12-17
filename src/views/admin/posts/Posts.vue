@@ -132,6 +132,7 @@ export default class Posts extends Vue {
   postsCol = firebase.firestore().collection("posts");
   storage = firebase.storage();
   forumPhotosFolder = "forum-photos";
+  uploadProgress = 0;
 
   newPostData: any = {
     title: "",
@@ -247,6 +248,7 @@ export default class Posts extends Vue {
 
     /// TODO: upload progress indicator
     task.on("next", (snapshot) => {
+      console.log("upload", snapshot.bytesTransferred, snapshot.totalBytes);
       console.log(
         "upload progress",
         snapshot.bytesTransferred / snapshot.totalBytes
