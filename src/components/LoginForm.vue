@@ -33,7 +33,7 @@ export default class LoginForm extends Vue {
         .auth()
         .signInWithEmailAndPassword(this.form.email, this.form.password);
     } catch (e) {
-      console.error(e);
+      this.app.error(e);
     }
     return;
   }

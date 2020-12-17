@@ -7,7 +7,7 @@
     <LoginForm />
   </div>
 
-  <section v-if="app.isAdmin">
+  <section v-if="1 || app.isAdmin">
     <hr />
 
     <div id="nav">
