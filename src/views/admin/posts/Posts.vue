@@ -1,15 +1,5 @@
 <template>
   <div class="posts">
-    <!-- posts categories -->
-    <!-- <div>
-      <a href="/admin/posts/all">All</a>
-      <span v-for="category in categories" :key="category">
-        |
-        <a :href="'/admin/posts/' + category">{{ category }}</a>
-      </span>
-    </div>
-    <br /> -->
-
     <h2>
       Category:
       <select v-model="search.category" @change="onSearch()">
