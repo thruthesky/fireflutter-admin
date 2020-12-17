@@ -1,11 +1,15 @@
 <template>
-  <div class="home">
-    Home
-    <div v-if="app.loggedIn">User logged: uid: {{ app.user.uid }}</div>
-    <div v-if="app.notLoggedIn">
-      <LoginForm />
+  <section class="home p-5">
+    <div class="p-5 d-flex justify-content-center">
+      <img width="120" height="120" src="/img/fire.svg" />
     </div>
-  </div>
+
+    <p class="text-center text-white">
+      FireVue
+    </p>
+
+    <div v-if="app.loggedIn">User logged: uid: {{ app.user.uid }}</div>
+  </section>
 </template>
 
 <script lang="ts">
@@ -25,3 +29,10 @@ export default class Home extends Vue {
   app = new AppService();
 }
 </script>
+
+<style lang="scss" scoped>
+.home {
+  background-color: #2196f3;
+  height: 100vh;
+}
+</style>
