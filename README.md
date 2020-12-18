@@ -1,11 +1,29 @@
 # Firebase Admin
 
-This project is for managing the firebase for `FireFlutter` project. But it can be used for serving the clients(members) of the app.
+- This project is for managing the firebase for `FireFlutter` project. But it can be used for serving the clients(members) of the app by customizing(designing) the front.
 
-## Project Install
+- Cloud functions in fireflutter-firebase should be deployed to manage user accounts. Managing user accounts like creating/deleting is not allowed directly from frontend.
+
+# Project Installation, Serving, Deployment
+
+## Get flutter-admin project
 
 ```
 git clone https://github.com/thruthesky/fireflutter-admin
+cd fireflutter-admin
+npm i
+npm run serve
+```
+
+## Deploye fireflutter-firebase functions
+
+```
+git clone https://github.com/thruthesky/fireflutter-firebase
+cd fireflutter-firebase
+npm i
+cd functions
+npm i
+firebase deploy --only functions
 ```
 
 ## Project setup
@@ -68,4 +86,54 @@ To deploy fireflutter-admin to firebase, follow the instructions below.
 
 ```sh
 firebase deploy --only hosting
+```
+
+# Developer Coding Guideline
+
+## User management
+
+- This explains how to create a user account and delete it.
+
+```js
+/// Login as admin
+try {
+  const userCreate = await firebase
+    .app()
+    .functions("asia-northeast3")
+    .httpsCallable("userCreate");
+  const re = await userCreate({
+    email: "create1@test.com",
+    password: "12345a,*",
+    phoneNumber: "+10123456701",
+    displayName: "User V",
+    photoURL: "http://www.example.com/12345678/photo.png",
+    disabled: false
+  });
+  const user = re.data;
+  console.log(user);
+  try {
+    const userDelete = await firebase
+      .app()
+      .functions("asia-northeast3")
+      .httpsCallable("userDelete");
+    await userDelete(user.uid);
+  } catch (e) {
+    const code = e.code;
+    const message = e.message;
+    const details = e.details;
+    console.log(code, message, details);
+  }
+} catch (e) {
+  const code = e.code;
+  const message = e.message;
+  const details = e.details;
+  console.log(code, message, details);
+}
+```
+
+# Trouble Shooting
+
+```
+Status Code: 500
+Referrer Policy: strict-origin-when-cross-origin
 ```

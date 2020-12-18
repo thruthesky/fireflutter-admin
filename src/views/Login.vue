@@ -1,6 +1,7 @@
 <template>
-  Hllo
-  <LoginForm />
+  <section class="layout-content mt-5">
+    <LoginForm />
+  </section>
 </template>
 
 <script lang="ts">

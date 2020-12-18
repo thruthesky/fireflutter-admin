@@ -1,26 +1,31 @@
 <template>
-  <div
-    class="c-a-padding d-flex justify-content-between bg-light"
-    v-if="currentRoute != '/private-policy'"
-  >
-    <div class="d-flex">
-      <router-link class="navbar-brand" to="/">FireFlutter</router-link>
-      <router-link class="nav-link" to="/login">Login</router-link>
-      <router-link class="nav-link" to="/logout">Logout</router-link>
-      <router-link class="nav-link" to="/register">Register</router-link>
-      <router-link class="nav-link" to="/profile">Profile</router-link>
-      <router-link class="nav-link" to="/contacts">Contacts</router-link>
-      <router-link class="nav-link" to="/private-policy"
-        >Private Policy</router-link
+  <section class="layout">
+    <div class="header-wrapper">
+      <header
+        class="d-flex justify-content-between"
+        v-if="currentRoute != '/private-policy'"
       >
-      <router-link class="nav-link" to="/about">About</router-link>
+        <div class="d-flex">
+          <router-link class="logo" to="/">FireFlutter</router-link>
+          <router-link to="/login" v-if="app.notLoggedIn">Login</router-link>
+          <router-link to="/register" v-if="app.notLoggedIn"
+            >Register</router-link
+          >
+          <router-link to="/profile" v-if="app.loggedIn">Profile</router-link>
+          <router-link to="/contacts">Contacts</router-link>
+          <router-link to="/private-policy">Private Policy</router-link>
+          <router-link to="/about">About</router-link>
+          <router-link to="/logout" v-if="app.loggedIn">Logout</router-link>
+        </div>
+        <div>
+          <router-link to="/admin" v-if="app.isAdmin">Admin</router-link>
+        </div>
+      </header>
     </div>
-    <div>
-      <router-link class="nav-link" to="/admin">Admin</router-link>
-    </div>
-  </div>
-
-  <router-view />
+    <main>
+      <router-view />
+    </main>
+  </section>
 </template>
 
 <script lang="ts">
@@ -72,11 +77,29 @@ export default class RegisterForm extends Vue {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+  color: #323232;
 }
 
-.c-a-padding a {
-  padding: 12px;
+.layout {
+  min-height: 100vh;
+  .header-wrapper {
+    background-color: #1976d2;
+    a {
+      display: block;
+      color: #e0e0e0;
+      text-decoration: none;
+      padding: 1em;
+      &.logo {
+        padding-left: 0;
+      }
+    }
+  }
+  header,
+  .layout-content,
+  footer {
+    margin: 0 auto;
+    max-width: 1024px;
+  }
 }
 
 .avatar {
@@ -95,5 +118,31 @@ export default class RegisterForm extends Vue {
 }
 .grey {
   color: grey;
+}
+.top {
+  top: 0;
+}
+.left {
+  left: 0;
+}
+
+.form-hint {
+  color: grey;
+}
+.form-title {
+  margin-top: 0.25em;
+}
+
+input {
+  border: 1px solid grey;
+  font-size: 1.5em;
+}
+.form-submit {
+  margin-top: 1em;
+  border: 0;
+  font-size: 0.9em;
+  padding: 0.5em 2em;
+  color: white;
+  background-color: blue;
 }
 </style>

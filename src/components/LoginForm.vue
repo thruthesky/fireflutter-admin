@@ -1,16 +1,17 @@
 <template>
   <div class="login-form">
-    <h1>Login</h1>
+    <small class="form-hint">Please login</small>
+    <h1 class="form-title">Login</h1>
     <form @submit.prevent="onSubmit">
       <div>
-        Email
+        <div class="form-label">Email</div>
         <input type="email" name="email" v-model="form.email" />
       </div>
       <div>
-        Password
+        <div class="form-label">Password</div>
         <input type="password" name="password" v-model="form.password" />
       </div>
-      <button type="submit">Login</button>
+      <button class="form-submit" type="submit">Login</button>
     </form>
   </div>
 </template>
@@ -32,8 +33,9 @@ export default class LoginForm extends Vue {
       const credential = await firebase
         .auth()
         .signInWithEmailAndPassword(this.form.email, this.form.password);
+      this.app.alert("login success");
     } catch (e) {
-      console.error(e);
+      this.app.error(e);
     }
     return;
   }

@@ -31,9 +31,9 @@ export default class RegisterForm extends Vue {
       const credential = await firebase
         .auth()
         .createUserWithEmailAndPassword(this.form.email, this.form.password);
-      console.log("registered uid: ", credential?.user?.uid);
+     this.app.alert("registered uid: " + credential?.user?.uid);
     } catch (e) {
-      console.error(e);
+      this.app.error(e);
     }
     return;
   }

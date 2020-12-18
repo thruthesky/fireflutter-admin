@@ -3,14 +3,23 @@
     <h2>Categories page</h2>
 
     <p>Forum categories:</p>
-    <div v-for="category in categories" :key="category['id']" class="item">
-      ID: {{ category["id"] }} <br />
-      Title: <input type="text" v-model="category['title']" /> <br />
-      Description: <input type="text" v-model="category['description']" />
-      <br />
-    </div>
 
-    <button type="button" @click="onSave()">Save</button>
+    <table class="table">
+      <tr>
+        <th>ID</th>
+        <th>TITLE</th>
+        <th>DESCRIPTION</th>
+        <th>ACTIONS</th>
+      </tr>
+      <tr v-for="category in categories" :key="category.id">
+        <td>{{ category.id }}</td>
+        <td><input type="text" v-model="category.title" /></td>
+        <td><input type="text" v-model="category.description" /></td>
+        <td><a :href="'/admin/settings/forum/' + category.id">Settings</a></td>
+      </tr>
+    </table>
+
+    <button type="button" @click="onSave()">Save All</button>
 
     <p v-show="fetchingCategories">Loading category list ..</p>
   </div>
@@ -44,11 +53,10 @@ export default class Categories extends Vue {
     this.fetchCategories();
   }
   onSave() {
-    // console.log(proxy(this.categories));
     this.categories.map((category) => {
       this.col.doc(category["id"]).update({
         title: category.title ?? "",
-        description: category.description ?? ""
+        description: category.description ?? "",
       });
     });
   }
@@ -56,11 +64,14 @@ export default class Categories extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.list {
-  text-align: left;
+.table {
+  width: 100%;
+  & tr > th {
+    border: 1px solid black;
+  }
 }
 
-.item {
-  margin-bottom: 1em;
+input {
+  width: 100%;
 }
 </style>
