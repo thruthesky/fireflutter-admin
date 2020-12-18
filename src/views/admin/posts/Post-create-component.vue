@@ -58,7 +58,6 @@
   </div>
 </template>
 
-
 <script lang="ts">
 import { Vue, Options } from "vue-class-component";
 import firebase from "firebase/app";
@@ -67,9 +66,11 @@ import "firebase/storage";
 import PostComponent from "./Post-component.vue";
 import { AppService } from "@/services/app.service";
 
+import algoliasearch from "algoliasearch";
+
 @Options({
   props: ["category", "categories"],
-  emits: ["on-created"],
+  emits: ["on-created"]
 })
 export default class PostsCreateComponent extends Vue {
   postsCol = firebase.firestore().collection("posts");
@@ -86,7 +87,7 @@ export default class PostsCreateComponent extends Vue {
     title: "",
     content: "",
     category: "",
-    files: [],
+    files: []
   };
 
   /**
@@ -111,13 +112,32 @@ export default class PostsCreateComponent extends Vue {
       const post = await this.postsCol.add(this.newPostData);
       this.newPostData.id = post.id;
       this.$emit("on-created", Object.assign({}, this.newPostData));
-      this.newPostData.title = "";
-      this.newPostData.content = "";
-      this.newPostData.files = [];
-      alert("New post created!");
     } catch (e) {
       alert(e);
     }
+
+    try {
+      const client = algoliasearch(
+        "W42X6RIXO5",
+        "962a64f527cc761542f6042e522b6023"
+      );
+      const index = client.initIndex("Dev");
+      const data = {
+        objectID: "posts/" + this.newPostData.id,
+        title: this.newPostData.title,
+        content: this.newPostData.content,
+        stamp: new Date().getTime()
+      };
+      console.log("data: ", data);
+      await index.saveObject(data);
+    } catch (e) {
+      this.app.error(e);
+    }
+
+    this.newPostData.title = "";
+    this.newPostData.content = "";
+    this.newPostData.files = [];
+    alert("New post created!");
   }
 
   async onImageChanged(event: any) {
@@ -127,7 +147,7 @@ export default class PostsCreateComponent extends Vue {
     const ref = this.storage.ref(this.forumPhotosFolder + "/" + filename);
     const customMeta = { uid: firebase.auth().currentUser?.uid as string };
     const task = ref.put(file, {
-      customMetadata: customMeta,
+      customMetadata: customMeta
     });
 
     /// TODO: upload progress indicator

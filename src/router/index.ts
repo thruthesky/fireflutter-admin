@@ -24,7 +24,7 @@ const routes: Array<RouteRecordRaw> = [
         component: AdminHome
       },
       {
-        path: "users",
+        path: "users/:uid",
         component: () => import("../views/admin/Users.vue")
       },
       {
@@ -36,6 +36,11 @@ const routes: Array<RouteRecordRaw> = [
         path: "posts/:category",
         name: "Posts",
         component: () => import("../views/admin/posts/Posts.vue")
+      },
+      {
+        path: "search-posts",
+        name: "SearchPosts",
+        component: () => import("../views/admin/SearchPosts.vue")
       },
       {
         path: "photos/:path",
