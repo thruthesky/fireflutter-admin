@@ -91,8 +91,8 @@ import PostComponent from "./Post-component.vue";
 @Options({
   components: {
     PostComponent,
-    PostCreateComponent,
-  },
+    PostCreateComponent
+  }
 })
 export default class Posts extends Vue {
   categoriesCol = firebase.firestore().collection("categories");
@@ -106,10 +106,10 @@ export default class Posts extends Vue {
 
   search = {
     uid: "",
-    category: "",
+    category: ""
   };
 
-  selectedPostIDs: any[] = [];
+  selectedPostIDs: string[] = [];
   categories: string[] = [];
   posts: any[] = [];
 
@@ -200,22 +200,21 @@ export default class Posts extends Vue {
     this.posts.splice(idx, 1);
   }
 
-    onDeleteAll() {
-      const conf = confirm("Delete selected posts?");
-  
-      if (!conf) return;
-  
-      this.selectedPostIDs.forEach((id) => {
-        this.postsCol.doc(id).delete();
-        this.onDeleted(id);
-      });
-  
-      this.selectedPostIDs = [];
-      alert("Selected Posts deleted!");
-    }
+  onDeleteAll() {
+    const conf = confirm("Delete selected posts?");
+
+    if (!conf) return;
+
+    this.selectedPostIDs.forEach((id) => {
+      this.postsCol.doc(id).delete();
+      this.onDeleted(id);
+    });
+
+    this.selectedPostIDs = [];
+    alert("Selected Posts deleted!");
+  }
 }
 </script>
-
 
 <style lang="scss" scoped>
 .posts-table {
