@@ -8,9 +8,10 @@
   <br /><br />
 
   <div class="grid">
-    <div v-for="url of photos" :key="url" class="image-holder">
+    <div v-for="photo of photos" :key="photo.uid" class="image-holder">
+      <a :href="'/admin/users/' + photo.uid">View Owner</a>
       <div class="photo position-relative">
-        <img :src="url" class="image" />
+        <img :src="photo.url" class="image" />
         <button
           class="position-absolute top left"
           type="button"
@@ -35,7 +36,7 @@ export default class Posts extends Vue {
   storageRef = firebase.storage().ref();
   paths = ["forum-photos", "user-profile-photos"];
 
-  photos: string[] = [];
+  photos: any[] = [];
   loading = false;
   noMorePhotos = false;
   nextPageToken: string | null = null;
@@ -68,8 +69,15 @@ export default class Posts extends Vue {
     this.nextPageToken = res.nextPageToken;
 
     res.items.forEach(async (item) => {
-      const downloadURL = await item.getDownloadURL();
-      this.photos.push(downloadURL);
+      const data = {
+        url: "",
+        uid: "",
+      };
+      data.url = await item.getDownloadURL();
+      const metaData = await item.getMetadata();
+      Object.assign(data, metaData.customMetadata);
+      console.log(data);
+      this.photos.push(data);
     });
   }
 

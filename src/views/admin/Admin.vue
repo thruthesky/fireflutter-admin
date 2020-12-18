@@ -10,7 +10,7 @@
       <hr />
 
       <div id="nav">
-        <router-link to="/admin/users">Users</router-link> |
+        <router-link to="/admin/users/all">Users</router-link> |
         <router-link to="/admin/categories">Categories</router-link> |
         <router-link to="/admin/posts/all">Posts</router-link> |
         <router-link to="/admin/search-posts">Search Posts</router-link> |

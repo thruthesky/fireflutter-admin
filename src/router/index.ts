@@ -24,7 +24,7 @@ const routes: Array<RouteRecordRaw> = [
         component: AdminHome
       },
       {
-        path: "users",
+        path: "users/:uid",
         component: () => import("../views/admin/Users.vue")
       },
       {
