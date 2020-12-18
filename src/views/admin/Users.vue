@@ -4,9 +4,13 @@
 
     <div class="py-4">
       <button class="m-2" @click="onSelectAllUsers">
-        Select all users(in the list)
+        {{ checkbox.length ? "Deselect selected users" : "Select all users" }}
       </button>
-      <button :disabled="!checkbox.length" class="m-2" @click="onDeleteSelectedUsers">
+      <button
+        :disabled="!checkbox.length"
+        class="m-2"
+        @click="onDeleteSelectedUsers"
+      >
         Delete selected users
       </button>
       <input
@@ -85,7 +89,7 @@ export default class Users extends Vue {
 
   lastSnapshot: any;
 
-  uid: any = '';
+  uid: any = "";
 
   search() {
     this.users = [];
@@ -148,7 +152,7 @@ export default class Users extends Vue {
 
   async created() {
     const uid = this.$router.currentRoute.value.params["uid"];
-    if (uid != 'all') this.uid = uid;
+    if (uid != "all") this.uid = uid;
     this.search();
     window.addEventListener("scroll", this.handleScroll);
   }
@@ -177,10 +181,13 @@ export default class Users extends Vue {
     this.onDelete(uids);
   }
   onSelectAllUsers() {
-    this.checkbox = [];
-    this.users.forEach((user) => {
-      this.checkbox.push(user.uid);
-    });
+    if (this.checkbox.length) {
+      this.checkbox = [];
+    } else {
+      this.users.forEach((user) => {
+        this.checkbox.push(user.uid);
+      });
+    }
   }
 }
 </script>
