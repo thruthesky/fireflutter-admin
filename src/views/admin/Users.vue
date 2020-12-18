@@ -3,11 +3,14 @@
     <h1>User list in /users collection</h1>
 
     <div class="py-4">
-      <button class="m-2" @click="onSelectAllUsers">Select all users(in the list)</button>
-      <button class="m-2" @click="onDeleteSelectedUsers">Delete selected users</button>
+      <button class="m-2" @click="onSelectAllUsers">
+        Select all users(in the list)
+      </button>
+      <button :disabled="!checkbox.length" class="m-2" @click="onDeleteSelectedUsers">
+        Delete selected users
+      </button>
       <input
         class="fs-6"
-        style="width: 400px"
         type="text"
         placeholder="Search by UID"
         name="uid"
@@ -82,12 +85,13 @@ export default class Users extends Vue {
 
   lastSnapshot: any;
 
-  uid: any;
+  uid: any = '';
 
   search() {
     this.users = [];
     this.noMoreUsers = false;
-    if (this.uid == "all" || this.uid == "") {
+    this.lastSnapshot = null;
+    if (this.uid == "") {
       this.fetchUsers();
     } else {
       this.fetchUser();
@@ -143,7 +147,8 @@ export default class Users extends Vue {
   }
 
   async created() {
-    this.uid = this.$router.currentRoute.value.params["uid"];
+    const uid = this.$router.currentRoute.value.params["uid"];
+    if (uid != 'all') this.uid = uid;
     this.search();
     window.addEventListener("scroll", this.handleScroll);
   }
@@ -166,6 +171,8 @@ export default class Users extends Vue {
     }
   }
   onDeleteSelectedUsers() {
+    const conf = confirm("Delete Selected Users?");
+    if (!conf) return;
     const uids = proxy(this.checkbox);
     this.onDelete(uids);
   }
