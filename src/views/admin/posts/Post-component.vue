@@ -1,10 +1,10 @@
 <template>
   <td>
-    <b>ID:</b> {{ post.id }} <br />
-    <b>User ID:</b> {{ post.uid }} <br />
-    <b>Category:</b> {{ post.category }}
+    <p><b>ID:</b> {{ post.id }}</p>
+    <p><b>User ID:</b> {{ post.uid }}</p>
+    <p><b>Category:</b> {{ post.category }}</p>
   </td>
-  <td v-if="!inEdit">
+  <td class="text-wrap text-break" v-if="!inEdit">
     <p><b>Title:</b> {{ post.title }}</p>
     <b>Content:</b>
     <p>{{ post.content }}</p>

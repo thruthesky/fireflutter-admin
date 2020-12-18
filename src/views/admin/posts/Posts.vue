@@ -38,7 +38,7 @@
     </div>
 
     <!-- posts table -->
-    <table class="mt-5 table table-striped table-sm ">
+    <table class="mt-5 table table-striped table-sm mw-100">
       <thead>
         <tr>
           <th scope="col">
