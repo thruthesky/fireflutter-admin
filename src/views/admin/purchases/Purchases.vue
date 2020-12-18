@@ -115,22 +115,8 @@
         <label for="purchaseStatus">Purchase Status</label>
       </span>
       <span>
-        <input
-          type="checkbox"
-          id="beginAt"
-          name="beginAt"
-          v-model="options.beginAt"
-        />
-        <label for="beginAt">BeginAt</label>
-      </span>
-      <span>
-        <input
-          type="checkbox"
-          id="endAt"
-          name="endAt"
-          v-model="options.endAt"
-        />
-        <label for="endAt">EndAt</label>
+        <input type="checkbox" id="date" name="date" v-model="options.at" />
+        <label for="date">Date</label>
       </span>
     </div>
 
@@ -142,6 +128,7 @@
         </button>
         <div class="daily-success-payment" v-show="showPaymentSummary">
           <div class="day" v-for="(day, d) in successPayment" :key="d">
+            <div>{{ d }}</div>
             <div class="currency" v-for="(currency, c) in day" :key="c">
               {{ c }}: {{ currency }}
             </div>
@@ -155,6 +142,7 @@
         </button>
         <div class="daily-product-purchase" v-show="showProductSummary">
           <div class="day" v-for="(day, d) in productPurchase" :key="d">
+            <div>{{ d }}</div>
             <div class="product" v-for="(product, p) in day" :key="p">
               {{ p }}: {{ product }}
             </div>
@@ -162,7 +150,6 @@
         </div>
       </div>
 
-      <div></div>
       <div>
         <button @click="showUserSummary = !showUserSummary">
           User Summary
@@ -176,29 +163,35 @@
           </div>
         </div>
       </div>
+      <div>Total Summary</div>
+      <div class="total-summary">
+        <div
+          class="currency"
+          v-for="(currency, c) in totalSummary.total"
+          :key="c"
+        >
+          {{ c }}: {{ currency }}
+        </div>
+      </div>
     </div>
 
     <table class="transaction">
       <tr>
+        <th v-if="options.photo">Photo</th>
         <th>id</th>
         <th>uid</th>
-        <th v-if="options.photo">Photo</th>
         <th>Name</th>
         <th>Email</th>
         <th v-if="options.phoneNumber">Phone</th>
-        <th>Status</th>
         <th>Product id</th>
         <th v-if="options.title">Title</th>
         <th v-if="options.description">Description</th>
         <th v-if="options.price">Price</th>
         <th v-if="options.purchaseID">Purchase ID</th>
-        <th v-if="options.purchaseStatus">Purchase Status</th>
-        <th v-if="options.beginAt">BeginAt</th>
-        <th v-if="options.endAt">EndAt</th>
+        <!-- <th v-if="options.purchaseStatus">Purchase Status</th> -->
+        <th v-if="options.at">Date</th>
       </tr>
       <tr v-for="transaction in transactions" :key="transaction.id">
-        <td>{{ transaction?.id }}</td>
-        <td>{{ transaction?.uid }}</td>
         <td v-if="options.photo">
           <img
             v-if="transaction.photoURL"
@@ -206,10 +199,11 @@
             :alt="transaction.photoURL"
           />
         </td>
+        <td>{{ transaction?.id }}</td>
+        <td>{{ transaction?.uid }}</td>
         <td>{{ transaction?.displayName ?? "No Name" }}</td>
         <td>{{ transaction?.email }}</td>
         <td v-if="options.phoneNumber">{{ transaction?.phoneNumber }}</td>
-        <td>{{ transaction?.status }}</td>
         <td>{{ transaction?.productDetails?.id }}</td>
         <td v-if="options.title">{{ transaction?.productDetails?.title }}</td>
         <td v-if="options.description">
@@ -219,11 +213,10 @@
         <td v-if="options.purchaseID">
           {{ transaction?.purchaseDetails?.productID }}
         </td>
-        <td v-if="options.purchaseStatus">
+        <!-- <td v-if="options.purchaseStatus">
           {{ transaction?.purchaseDetails?.pendingCompletePurchase }}
-        </td>
-        <td v-if="options.beginAt">{{ transaction.beginAtDate }}</td>
-        <td v-if="options.endAt">{{ transaction.endAtDate }}</td>
+        </td> -->
+        <td v-if="options.at">{{ transaction.atDate }}</td>
       </tr>
     </table>
   </div>
@@ -240,15 +233,26 @@ import { proxy } from "@/services/functions";
   components: {}
 })
 export default class Purchases extends Vue {
-  col = firebase.firestore().collection("purchase");
+  historyDoc = firebase
+    .firestore()
+    .collection("purchase")
+    .doc("history");
+
+  // errorCol = this.historyDoc.collection("error");
+  // pendingCol = this.historyDoc.collection("pending");
+  // successCol = this.historyDoc.collection("success");
 
   transactions: any[] = [];
   successPayment: { [key: string]: { [key: string]: number } } = {};
   productPurchase: { [key: string]: { [key: string]: number } } = {};
   userPurchase: { [key: string]: { [key: string]: any } } = {};
 
+  totalSummary: { [key: string]: { [key: string]: number } } = {
+    total: {}
+  };
+
   form = {
-    status: "",
+    status: "success",
     productID: ""
   };
 
@@ -312,15 +316,13 @@ export default class Purchases extends Vue {
       0
     );
 
-    let q = this.col
-      .where("beginAt", ">=", _beginAt)
-      .where("beginAt", "<=", _endAt);
+    let q = this.historyDoc
+      .collection(data.status)
+      .where("at", ">=", _beginAt)
+      .where("at", "<=", _endAt);
 
     if (data.uid) {
       q = q.where("uid", "==", data.uid);
-    }
-    if (data.status) {
-      q = q.where("status", "==", data.status);
     }
     if (data.productID) {
       q = q.where("productDetails.id", "==", data.productID);
@@ -341,13 +343,8 @@ export default class Purchases extends Vue {
     console.log(this.transactions);
     doc.docs.forEach((d: any) => {
       const data = d.data();
-      const bdate = new Date(data.beginAt.seconds * 1000);
-      data["beginAtDate"] = data?.beginAt?.seconds
-        ? bdate.toLocaleString()
-        : "";
-      data["endAtDate"] = data?.endAt?.seconds
-        ? new Date(data.endAt.seconds * 1000).toLocaleString()
-        : "";
+      const bdate = new Date(data.at.seconds * 1000);
+      data["atDate"] = data?.at?.seconds ? bdate.toLocaleString() : "";
 
       data["id"] = d.id;
       const day =
@@ -357,13 +354,19 @@ export default class Purchases extends Vue {
         (bdate.getUTCMonth() + 1) +
         "-" +
         bdate.getUTCDate();
-      if (data.status == "success") {
+      if (proxy(this.form).status == "success") {
         const currencyCode =
-          data.productDetails.skProduct.priceLocale.currencyCode;
-        const price = parseInt(data.productDetails.skProduct.price);
+          data.purchaseDetails.skProduct.priceLocale.currencyCode;
+        const price = parseInt(data.purchaseDetails.skProduct.price);
         const product = data.productDetails.id;
         const uid = data.uid;
-        console.log(product);
+        /// Total Summary
+        if (this.totalSummary["total"][currencyCode] == null)
+          this.totalSummary["total"][currencyCode] = 0;
+        this.totalSummary["total"][currencyCode] += price;
+
+        /// End of Total Summary
+
         /// Success Payment Summary
         if (this.successPayment[day] == null) this.successPayment[day] = {};
 
@@ -394,15 +397,14 @@ export default class Purchases extends Vue {
           this.userPurchase[uid]["currency"][currencyCode] = 0;
 
         this.userPurchase[uid]["currency"][currencyCode] += price;
-
         /// End of User Purchase
       }
 
       this.transactions.push(data);
     });
 
-    console.log(this.successPayment);
-    console.log(this.productPurchase);
+    // console.log(this.successPayment);
+    // console.log(this.productPurchase);
   }
 }
 </script>
