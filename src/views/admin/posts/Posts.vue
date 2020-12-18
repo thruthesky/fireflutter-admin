@@ -86,24 +86,26 @@
 
     <!-- posts table -->
     <table class="posts-table">
-      <tr>
-        <th>
-          <label for="select-all">
-            <input
-              type="checkbox"
-              name="select-all"
-              id="select-all"
-              @change="onSelectAll($event.target.checked)"
-              :checked="selectedPostIDs.length == posts.length"
-            />
-            All</label
-          >
-        </th>
-        <th>Post ID / User ID / Category</th>
-        <th>Title / Content</th>
-        <th>Files</th>
-        <th>Buttons</th>
-      </tr>
+      <thead>
+        <tr>
+          <th scope="col">
+            <label for="select-all">
+              <input
+                type="checkbox"
+                name="select-all"
+                id="select-all"
+                @change="onSelectAll($event.target.checked)"
+                :checked="selectedPostIDs.length == posts.length"
+              />
+              All</label
+            >
+          </th>
+          <th scope="col">Post ID / User ID / Category</th>
+          <th scope="col">Title / Content</th>
+          <th scope="col">Files</th>
+          <th scope="col">Buttons</th>
+        </tr>
+      </thead>
       <tr
         v-for="post in posts"
         :key="post.id"
