@@ -1,6 +1,6 @@
 # Firebase Admin
 
-- This project is for managing the firebase for `FireFlutter` project. But it can be used for serving the clients(members) of the app by customizing(designing) the front.
+- This project is for managing for `thefire project` But it can be used for serving the clients(members) of the app by customizing(designing) the front.
 
 - Cloud functions in fireflutter-firebase should be deployed to manage user accounts. Managing user accounts like creating/deleting is not allowed directly from frontend.
 
@@ -89,6 +89,10 @@ firebase deploy --only hosting
 ```
 
 # Developer Coding Guideline
+
+## App configuration
+
+## Fire Project Settings
 
 ## User management
 
