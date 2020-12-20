@@ -7,6 +7,13 @@
       </div>
       <button class="form-submit" type="submit">submit</button>
     </form>
+
+    <div v-for="post of posts" :key="post.objectID">
+      {{ post.objectID }}
+      {{ post.title }}
+      {{ post.content }}
+      {{ post.stamp }}
+    </div>
   </section>
 </template>
 <script lang="ts">
@@ -16,6 +23,7 @@ import firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/storage";
 import algoliasearch from "algoliasearch";
+import { Settings } from "@/services/settings.service";
 
 export default class SearchPosts extends Vue {
   keyword = "";
@@ -23,12 +31,14 @@ export default class SearchPosts extends Vue {
   client: any;
   index: any;
 
+  posts: any = [];
+
   created() {
     this.client = algoliasearch(
-      "W42X6RIXO5",
-      "962a64f527cc761542f6042e522b6023"
+      Settings.get("ALGOLIA_APP_ID"),
+      Settings.get("ALGOLIA_SEARCH_ONLY_API_KEY")
     );
-    this.index = this.client.initIndex("Dev");
+    this.index = this.client.initIndex(Settings.get("ALGOLIA_INDEX_NAME"));
   }
   onSubmit() {
     console.log("keword: ", this.keyword);
@@ -38,7 +48,9 @@ export default class SearchPosts extends Vue {
     };
 
     this.index.search(this.keyword, requestOptions).then((re: any) => {
-      console.log(re.hits);
+      this.posts = re.hits;
+
+      console.log(this.posts);
     });
   }
 }

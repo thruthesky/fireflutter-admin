@@ -53,6 +53,11 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("../views/admin/settings/Settings.vue")
       },
       {
+        path: "settings/app",
+        name: "AppSettings",
+        component: () => import("../views/admin/settings/AppSettings.vue")
+      },
+      {
         path: "settings/forum/:category",
         name: "CategorySettings",
         component: () => import("../views/admin/settings/CategorySettings.vue")

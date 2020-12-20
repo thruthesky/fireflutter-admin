@@ -67,6 +67,7 @@ import PostComponent from "./Post-component.vue";
 import { AppService } from "@/services/app.service";
 
 import algoliasearch from "algoliasearch";
+import { Settings } from "@/services/settings.service";
 
 @Options({
   props: ["category", "categories"],
@@ -89,6 +90,10 @@ export default class PostsCreateComponent extends Vue {
     category: "",
     files: []
   };
+
+  created() {
+    console.log(Settings.get("ALGOLIA_APP_ID"));
+  }
 
   /**
    * Creates new post
@@ -118,10 +123,10 @@ export default class PostsCreateComponent extends Vue {
 
     try {
       const client = algoliasearch(
-        "W42X6RIXO5",
-        "962a64f527cc761542f6042e522b6023"
+        Settings.get("ALGOLIA_APP_ID"),
+        Settings.get("ALGOLIA_ADMIN_API_KEY")
       );
-      const index = client.initIndex("Dev");
+      const index = client.initIndex(Settings.get("ALGOLIA_INDEX_NAME"));
       const data = {
         objectID: "posts/" + this.newPostData.id,
         title: this.newPostData.title,
@@ -129,6 +134,8 @@ export default class PostsCreateComponent extends Vue {
         stamp: new Date().getTime()
       };
       console.log("data: ", data);
+
+      /// This does not throw exception even if there is an error.
       await index.saveObject(data);
     } catch (e) {
       this.app.error(e);

@@ -4,8 +4,14 @@ import firebase from "firebase/app";
 import "firebase/functions";
 
 import { USER_NOT_EXISTS } from "@/services/definitions";
+import { Settings } from "./settings.service";
 
 export class AppService {
+  constructor() {
+    console.log("app service");
+    Settings.init();
+  }
+
   get loggedIn(): boolean {
     // console.log("store.state.user: ", store.state.user);
     return store.state.user.uid !== void 0;
@@ -25,7 +31,7 @@ export class AppService {
    */
   get user() {
     return {
-      uid: this.uid,
+      uid: this.uid
     };
   }
 

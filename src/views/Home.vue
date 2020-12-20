@@ -25,6 +25,7 @@ import { AppService } from "@/services/app.service";
 })
 export default class Home extends Vue {
   app = new AppService();
+  // created() {}
 }
 </script>
 
