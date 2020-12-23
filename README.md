@@ -82,6 +82,12 @@ To deploy fireflutter-admin to firebase, follow the instructions below.
 }
 ```
 
+- And run the following
+
+```sh
+firebase use [project-id]
+```
+
 - Then run
 
 ```sh
